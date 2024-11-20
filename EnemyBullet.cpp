@@ -124,9 +124,9 @@ void EnemyBullet::Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttac
         bulletColor->PositionUpdate(position);
         if (!isAttack)
         {
-            scale += 0.05f;
-            bulletColor->SetScale(VGet(scale, scale, scale));
+            scale += 0.02f;
         }
+        bulletColor->SetScale(VGet(scale, scale, scale));
     }
 
 
@@ -165,6 +165,7 @@ void EnemyBullet::Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttac
 
             //bulletの座標をリセットする
             position = VGet(EnemyPosition.x, EnemyPosition.y + 35, EnemyPosition.z);
+            bulletColor->PositionUpdate(position);
             positionStack = 0;
             scale = 0;
 
@@ -175,8 +176,7 @@ void EnemyBullet::Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttac
                 effect->PlayEffect();
                 effect->SetSpeed(2.0f);
             }
-            //次にサークル攻撃に変更
-            SwitchingIsCircleBullet();
+           
         }
 
     }

@@ -35,8 +35,7 @@ Object::~Object()
 void Object::Initialize(Enemy& enemy)
 {
     effect = new Effect();
-    effect->Initialize("material/TouhouStrategy/miko_hihou_effect.efkefc",
-        1.2f, position);
+    effect->Initialize("material/TouhouStrategy/black.efkefc", 1.2f, position);
     enemy.GetPosition(position);
     addPosition = VGet(1, 0, 1);
     isObject = false;
@@ -60,8 +59,9 @@ void Object::Update(Enemy& enemy, Calculation& calculation, const Input& input)
     if (isObject)
     {
         //オブジェクトとプレイヤーが当たった場合消す
-        if (isHitPlayer && isCanCatch && CheckHitKey(KEY_INPUT_5))
+        if (isHitPlayer && isCanCatch)
         {
+            effect->Initialize("material/TouhouStrategy/black.efkefc", 1.2f, position);
             enemy.GetPosition(position);
             isHitPlayer = false;
             isCanCatch = false;
@@ -82,7 +82,7 @@ void Object::Update(Enemy& enemy, Calculation& calculation, const Input& input)
                     {
                         isCanCatch = true;
                         DirectionCalculation(breath.position);
-
+                        effect->Initialize("material/TouhouStrategy/miko_hihou_effect.efkefc",1.2f, position);
                         break;
                     }
                 }

@@ -22,7 +22,7 @@ Player::Player()
     angle = 0;
     stock = 0;
 
-    time = 0;
+    attackEffectTime = 0;
     isHitEnemyAttack = false;
     isMove = false;
     isTopMove = false;
@@ -67,7 +67,9 @@ void Player::Initialize()
     
     //エフェクトのインスタンス化、初期化
     effect = new Effect();
+    attackEffect = new Effect();
     effect->Initialize("material/TouhouStrategy/miko_hihou_effect.efkefc",1.2f, effectPosition);
+    attackEffect->Initialize("material/TouhouStrategy/explosion.efkefc", 0.5f, effectPosition);
 }
 
 /// <summary>
@@ -397,8 +399,7 @@ void Player::PickUpObject(Object& object, const Input& input)
 {
 
     //オブジェクトとプレイヤーが当たった場合消す
-    if (input.GetNowFrameInput() & PAD_INPUT_X || 
-       CheckHitKey(KEY_INPUT_5))
+    if (input.GetNowFrameInput() & PAD_INPUT_X || CheckHitKey(KEY_INPUT_5))
     {
         object.PlayerIsHit(true);
         //球に触れたときストックを増やす
@@ -450,7 +451,26 @@ void Player::Attack(const Input& input)
         objectPosition = VGet(position.x, position.y, position.z);
     }
 
-    
+    if (isObjectHitEnemy)
+    {
+        if (attackEffectTime == 0)
+        {
+            attackEffect->PlayEffect();
+            attackEffect->PositionUpdate(attackPosition);
+            attackEffect->SetSpeed(2.0f);
+        }
+        //時間経過
+        attackEffectTime++;
+
+        if (attackEffectTime >= 105)
+        {
+            attackEffect->StopEffect();
+            attackEffectTime = 0;
+            isObjectHitEnemy = false;
+        }
+        
+    }
+
 }
 
 void Player::AttackHitCheck(Enemy& enemy,Calculation& calculation)
@@ -468,6 +488,8 @@ void Player::AttackHitCheck(Enemy& enemy,Calculation& calculation)
         //当たったら消す
         if (isObjectHitEnemy)
         {
+            attackPosition = VGet(objectPosition.x, objectPosition.y, objectPosition.z);
+            attackEffect->PositionUpdate(attackPosition);
             objectPosition = VGet(position.x, position.y, position.z);
             isPushKey = false;
             enemy.SetIsPlayerAttackHit(true);

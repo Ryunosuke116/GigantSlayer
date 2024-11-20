@@ -38,15 +38,17 @@ private:
     VECTOR bottomSpherePosition;
     VECTOR closePosition;          //プレイヤーと球の最も近い点
     VECTOR testPosition;
+    VECTOR attackPosition;         //攻撃の球
 
     Effect* effect;
+    Effect* attackEffect;
 
     int effectResourceHandle;
     int modelHandle;
     int attachIndex;            //再生中のモーション番号
     int motionNum;
     int stock;
-    int time;
+    int attackEffectTime;
     int playingEffectHandle;
     int motionNumber;           //モーション番号
 

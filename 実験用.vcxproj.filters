@@ -13,9 +13,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\Enemy">
-      <UniqueIdentifier>{e6ee0e8e-1981-45cb-bda0-db3d0571f4c1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\Enemy">
       <UniqueIdentifier>{88f68016-a25e-4917-b4e0-66310ff16882}</UniqueIdentifier>
     </Filter>
@@ -31,22 +28,28 @@
     <Filter Include="ソース ファイル\TitleScene">
       <UniqueIdentifier>{260c2cb7-4cd0-4891-a541-7dc14bf3340b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\GameScene.h">
+      <UniqueIdentifier>{15524072-c1fd-457b-b8f3-b03564997a60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\GameScene\Enemy">
+      <UniqueIdentifier>{e6ee0e8e-1981-45cb-bda0-db3d0571f4c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Enemy.cpp">
-      <Filter>ソース ファイル\Enemy</Filter>
+      <Filter>ソース ファイル\GameScene\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="EnemyBreath.cpp">
-      <Filter>ソース ファイル\Enemy</Filter>
+      <Filter>ソース ファイル\GameScene\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="EnemyCircleAttack.cpp">
-      <Filter>ソース ファイル\Enemy</Filter>
+      <Filter>ソース ファイル\GameScene\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="BulletCalculation.cpp">
-      <Filter>ソース ファイル\Enemy</Filter>
+      <Filter>ソース ファイル\GameScene\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="EnemyBullet.cpp">
-      <Filter>ソース ファイル\Enemy</Filter>
+      <Filter>ソース ファイル\GameScene\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="Effect.cpp">
       <Filter>ソース ファイル</Filter>
@@ -95,22 +98,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Map.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Calculation.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
@@ -151,6 +139,21 @@
     </ClInclude>
     <ClInclude Include="ObjectManager.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>ヘッダー ファイル\GameScene.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>ヘッダー ファイル\GameScene.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>ヘッダー ファイル\GameScene.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>ヘッダー ファイル\GameScene.h</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>ヘッダー ファイル\GameScene.h</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

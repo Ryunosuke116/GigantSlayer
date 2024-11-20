@@ -272,7 +272,7 @@ void Enemy::MotionUpdate()
     //’eUŒ‚
     else if(motionNum == bulletAttack)
     {
-        playTime += 0.55f;
+        playTime += 0.75f;
     }
     //ƒuƒŒƒXUŒ‚
     else if(motionNum == breathAttack)
@@ -305,8 +305,6 @@ void Enemy::MotionUpdate()
             if (playTime >= totalTime)
             {
                 ChangeMotion(stand);
-                //bottomPosition.x -= 8.5f;
-               // bottomPosition.y -= 3.5f;
             }
           
         }
@@ -347,6 +345,11 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
             {
                 standTime = 0;
                 Order();
+
+                if (isBulletNumber)
+                {
+                    standTime = 50.0f;
+                }
             }
         }
     }
@@ -355,11 +358,12 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
     //’eUŒ‚
     if (motionNum == bulletAttack)
     {
-        
+        //UŒ‚‚ğ•ú‚Âƒ‚[ƒVƒ‡ƒ“‚É“ü‚Á‚½UŒ‚‚·‚é
         if (playTime >= 45.0f && !isAttack)
         {
             bullet.SetIsAttack(true);
             isAttack = true;
+           
         }
         else if(!isAttack)
         {
@@ -381,6 +385,7 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
         {
             breath.SetIsAttack(true);
             isAttack = true;
+            
         }
     }
 }
@@ -393,9 +398,27 @@ void Enemy::Order()
     //’eUŒ‚
     if (orderNumber == 0)
     {
-        orderNumber++;
-        ChangeMotion(bulletAttack);
-
+        //‰½‰ñUŒ‚‚·‚é‚©
+        if (!isBulletNumber)
+        {
+            srand((unsigned int)time(NULL));
+            maxBulletNumber = rand() % 2 + 2;
+            isBulletNumber = true;
+        }
+        //Å‘å‰ñ”•ªUŒ‚‚·‚é
+        if (maxBulletNumber > bulletNumber)
+        {
+            bulletNumber++;
+            ChangeMotion(bulletAttack);
+        }
+        //UŒ‚‚µI‚¦‚½‚çŸ‚ÌUŒ‚‚É
+        else
+        {
+            orderNumber++;
+            bulletNumber = 0;
+            isBulletNumber = false;
+        }
+        
     }
     //ƒuƒŒƒXUŒ‚
     else if (orderNumber == 1)

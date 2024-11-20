@@ -79,8 +79,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
         ClearDrawScreen();
 
         //•`‰æ
-        sceneManager->Draw();
         clsDx();
+        sceneManager->Draw();
 
         // — ‰æ–Ê‚Ì“à—e‚ð•\‰æ–Ê‚É”½‰f‚³‚¹‚é
         ScreenFlip();

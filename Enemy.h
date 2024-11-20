@@ -46,6 +46,8 @@ private:
     int motionNum;
     int attachIndex;                    //再生中のモーション番号
     int orderNumber;                    //行動する順
+    int bulletNumber;                   //現在の攻撃回数
+    int maxBulletNumber;                //最大攻撃回数
     float totalTime;                    //モーションの総再生時間
     
     
@@ -60,6 +62,7 @@ private:
     bool isRightMove;                   //右に動いたか
     bool isTopMove;                     //上に動いたか
     bool isBottomMove;                  //下に動いたか
+    bool isBulletNumber;                //何回攻撃するか
     VECTOR topPosition;                    //Enemyのポジション
     VECTOR bottomPosition;           //球のポジション
     VECTOR AttackSpherePosition;        //攻撃のポジション
