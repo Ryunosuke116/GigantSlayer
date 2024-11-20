@@ -13,6 +13,7 @@
 #include "SceneManager.h"
 #include "Map.h"
 #include "Calculation.h"
+#include "ObjectManager.h"
 #include "BulletCalculation.h"
 #include <iostream>
 #include <array>

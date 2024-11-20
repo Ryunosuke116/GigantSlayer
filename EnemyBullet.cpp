@@ -141,6 +141,7 @@ void EnemyBullet::Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttac
         {
             position.y += bulletSpeed_Y;
         }
+        //Å@0Ç‹Ç≈óéâ∫ÇµÇΩÇ∆Ç´
         else
         {
             isAttack = false;

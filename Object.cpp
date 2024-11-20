@@ -56,6 +56,7 @@ void Object::Update(Enemy& enemy, Calculation& calculation, const Input& input)
         isObject = true;
     }
 
+
     if (isObject)
     {
         
@@ -119,8 +120,6 @@ void Object::Update(Enemy& enemy, Calculation& calculation, const Input& input)
     {
         enemy.GetPosition(position);
     }
-
-    
 }
 
 /// <summary>

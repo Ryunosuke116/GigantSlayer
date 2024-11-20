@@ -60,8 +60,8 @@ void Game::Update()
     for (auto& objects : object)
     {
         (*objects).Update(*enemy, *calculation, *input);
-       
     }
+    enemy->bullet->SetIsEmerge(false);
     player->Update(*calculation, object, *input, *enemy);
 
     effect->PlayEffectUpdate();
