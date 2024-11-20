@@ -71,8 +71,6 @@ void Enemy::Update()
 {
     topPosition = VGet(bottomPosition.x, bottomPosition.y + 50.0f, bottomPosition.z);
 
-    bullet->Update(bottomPosition, *circleAttack);
-    bullet[1].Update(bottomPosition, *circleAttack);
    
     if (CheckHitKey(KEY_INPUT_1))
     {
@@ -94,6 +92,8 @@ void Enemy::Update()
     ActionFlow(*bullet, *circleAttack, *breath);
     //モーション更新
     MotionUpdate();
+
+    bullet->Update(bottomPosition, *circleAttack);
 
     //弾攻撃のモーション中は別でポジションを用意
     if (motionNum != bulletAttack)
@@ -272,7 +272,7 @@ void Enemy::MotionUpdate()
     //弾攻撃
     else if(motionNum == bulletAttack)
     {
-        playTime += 0.75f;
+        playTime += 0.65f;
     }
     //ブレス攻撃
     else if(motionNum == breathAttack)
@@ -344,7 +344,7 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
             if (playTime == 0)
             {
                 standTime = 0;
-                Order();
+                Order(bullet);
 
                 if (isBulletNumber)
                 {
@@ -369,6 +369,7 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
         {
             bullet.SetPosition(topPosition);
             bullet.SetIsSetUpMotion(true);
+
         }
     }
     //のけぞり
@@ -393,7 +394,7 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
 /// <summary>
 /// 敵の行動順
 /// </summary>
-void Enemy::Order()
+void Enemy::Order(EnemyBullet& bullet)
 {
     //弾攻撃
     if (orderNumber == 0)
@@ -401,6 +402,8 @@ void Enemy::Order()
         //何回攻撃するか
         if (!isBulletNumber)
         {
+            //弾の種類切り替え
+            bullet.SetIsCircleBullet(false);
             srand((unsigned int)time(NULL));
             maxBulletNumber = rand() % 2 + 2;
             isBulletNumber = true;
@@ -417,6 +420,7 @@ void Enemy::Order()
             orderNumber++;
             bulletNumber = 0;
             isBulletNumber = false;
+        
         }
         
     }
@@ -429,6 +433,8 @@ void Enemy::Order()
     //サークル攻撃
     else if (orderNumber == 2)
     {
+        //弾の種類切り替え
+        bullet.SetIsCircleBullet(true);
         orderNumber = 0;
         ChangeMotion(bulletAttack);
     }

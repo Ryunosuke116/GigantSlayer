@@ -29,13 +29,13 @@ public:
     
     void AttackDesignation();
     void PlayerMovementPrediction();
-    void Order();
+    void Order(EnemyBullet& bullet);
     //モーション関連
     void ChangeMotion(int numberNum);
     void MotionUpdate();
 
     // インスタンス化
-    EnemyBullet* bullet = new EnemyBullet[4]();
+    EnemyBullet* bullet = new EnemyBullet();
     EnemyCircleAttack* circleAttack = new EnemyCircleAttack();
     EnemyBreath* breath = new EnemyBreath();
     

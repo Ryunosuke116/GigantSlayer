@@ -176,7 +176,6 @@ void EnemyBullet::Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttac
                 effect->PlayEffect();
                 effect->SetSpeed(2.0f);
             }
-           
         }
 
     }
