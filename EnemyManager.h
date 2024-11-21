@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "Enemy.h"
 
-class BulletCalculation
+class EnemyManager
 {
 public:
 

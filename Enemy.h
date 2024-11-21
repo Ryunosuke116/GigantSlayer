@@ -22,14 +22,14 @@ public:
     void ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
         EnemyBreath& breath);
     void GetPosition(VECTOR& setPosition);
-    void SetPosition(VECTOR& getPosition);
+    void SetPosition(const VECTOR& getPosition);
     void SetPlayerMoveSpeed(float moveSpeed);
     void SetIsPlayerMove(bool isMove);
     void SetIsPlayerMoveDirection(bool isTopMove, bool isBottomMove, bool isRightMove, bool isLeftMove);
     
     void AttackDesignation();
     void PlayerMovementPrediction();
-    void Order(EnemyBullet& bullet);
+    void Order(EnemyBullet& bullet, EnemyBreath& breath);
     //ÉÇÅ[ÉVÉáÉìä÷òA
     void ChangeMotion(int numberNum);
     void MotionUpdate();

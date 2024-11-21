@@ -1,11 +1,11 @@
-#include "BulletCalculation.h"
+#include "EnemyManager.h"
 
 /// <summary>
 /// プレイヤーの座標を保存
 /// </summary>
 /// <param name="player"></param>
 /// <param name="enemy"></param>
-void BulletCalculation::GetPlayerPos(Player& player, Enemy& enemy)
+void EnemyManager::GetPlayerPos(Player& player, Enemy& enemy)
 {
     VECTOR pos = VGet(0, 0, 0);
     player.GetPosition(pos);
@@ -17,7 +17,7 @@ void BulletCalculation::GetPlayerPos(Player& player, Enemy& enemy)
 /// </summary>
 /// <param name="player"></param>
 /// <param name="enemy"></param>
-void BulletCalculation::GetPlayerMoveSpeed(Player& player,Enemy& enemy)
+void EnemyManager::GetPlayerMoveSpeed(Player& player,Enemy& enemy)
 {
     enemy.bullet->SetPlayerMoveSpeed(player.GetMoveSpeed());
 }
@@ -27,7 +27,7 @@ void BulletCalculation::GetPlayerMoveSpeed(Player& player,Enemy& enemy)
 /// </summary>
 /// <param name="player"></param>
 /// <param name="enemy"></param>
-void BulletCalculation::GetIsMove(Player& player, Enemy& enemy)
+void EnemyManager::GetIsMove(Player& player, Enemy& enemy)
 {
     enemy.bullet->SetIsPlayerMove(player.GetIsMove());
     enemy.bullet->SetIsPlayerMoveDirection(player.isTopMove, player.isBottomMove, player.isRightMove, player.isLeftMove);
@@ -38,11 +38,12 @@ void BulletCalculation::GetIsMove(Player& player, Enemy& enemy)
 /// </summary>
 /// <param name="player"></param>
 /// <param name="enemy"></param>
-void BulletCalculation::Update(Player& player, Enemy& enemy)
+void EnemyManager::Update(Player& player, Enemy& enemy)
 {
     GetPlayerMoveSpeed(player, enemy);
     GetPlayerPos(player, enemy);
     GetIsMove(player,enemy);
+    enemy.SetPosition(player.GetPosition());
 }
 
 

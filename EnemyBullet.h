@@ -29,7 +29,7 @@ private:
     Effect* effect;
     Effect* bulletColor;
     static constexpr float theta    = 30;               //ù‰ñŠp“x‚ÌãŒÀ
-    static constexpr float speed    = 4.0f;             //‘¬“x
+    static constexpr float speed    = 2.0f;             //‘¬“x
     static constexpr float radius   = 5.0f;             //”¼Œa
     static constexpr float circleAttackBulletSpeed = 0.5f;
 

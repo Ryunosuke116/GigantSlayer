@@ -1,6 +1,8 @@
 #pragma once
 #include "Effect.h"
 
+
+
 class EnemyBreath
 {
 private:
@@ -31,6 +33,8 @@ private:
 	bool isStopAdd;				//‰ÁŽZ‚·‚é‚©‚Ç‚¤‚©
 	bool isDirection;			//Œü‚«‚ð•Ï‚¦‚é‚©
 	bool isEffect;
+ 
+	static constexpr int breathNumber = 84;
 
 public:
 
@@ -41,6 +45,7 @@ public:
 	void Update();
 	void Draw();
 	void CircumferenceCalculation(float& x, float& z);
+	void Rotation(VECTOR playerPos, VECTOR enemyPos);
 	void SetPosition(const VECTOR position);
 	void Direction(VECTOR& addPosition);
 	void ResetPosition(const VECTOR position);

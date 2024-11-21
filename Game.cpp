@@ -14,7 +14,7 @@ Game::Game(SceneManager& manager) : BaseScene{ manager }
     camera = new Camera();
     map = new Map();
     calculation = new Calculation();
-    bulletCalculation = new BulletCalculation();
+    enemyManager = new EnemyManager();
     for (auto& objects : object)
     {
         objects = new Object();
@@ -55,7 +55,7 @@ void Game::Update()
     //アップデート
     input->Update();
     camera->Update(player->GetPosition(), enemy->GetTopPosition());
-    bulletCalculation->Update(*player, *enemy);
+    enemyManager->Update(*player, *enemy);
     enemy->Update();
     for (auto& objects : object)
     {

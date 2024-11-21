@@ -46,7 +46,6 @@ void EnemyBreath::Initialize()
 	addPosition_Z = 2.0f;
 	addRotation_Y = 0.0175f;
 	fixCount = 3;
-	int breathNumber = 42;	//当たり判定の数
 	isDirection = false;
 	attackNumber += breathNumber * 2;
 	//effect = new Effect();
@@ -87,31 +86,7 @@ void EnemyBreath::Update()
 	{
 		isEffect = true;
 
-		////エフェクトを再生
-		//if (isEffect)
-		//{
-		//	//発動してから60fの間再生
-		//	if (effectPlayStack <= 120)
-		//	{
-		//		effectPlayStack++;
-		//		rotation.y += addRotation_Y;
-		//		if (rotation.y >= 21.0f || rotation.y <= 20.0f)
-		//		{
-		//			addRotation_Y *= -1;
-		//		}
-		//		effect->SetRotation(rotation);
-		//		//エフェクトを再生
-		//		effect->PositionUpdate(effectPosition);
-		//	}
-		//	else
-		//	{
-		//		//エフェクトを停止
-		//		effect->StopEffect();
-		//		effectPosition = VGet(formerPosition.x, formerPosition.y, formerPosition.z - 30);
-		//		effectPlayStack = 0;
-		//		isEffect = false;
-		//	}
-		//}
+	
 
 		const float maxTravelDistance = -34.0f;	//ブレスの最大移動距離
 			
@@ -123,37 +98,35 @@ void EnemyBreath::Update()
 
 		int stackCount = 0;	
 
-		for (auto& breath : breaths)
+		for (int i = 0; i < breathNumber; i++)
 		{
-			if (breath.position.z <= maxTravelDistance)
+			if (breaths[i].position.z <= maxTravelDistance)
 			{
-				breath.position = VGet(formerPosition.x,
+				breaths[i].position = VGet(formerPosition.x,
 					formerPosition.y, formerPosition.z);
 				//半径をリセット
-				breath.radius = 2;
+				breaths[i].radius = 2;
 				//方向を反転する
-				breath.addPosition.x = -breath.addPosition.x;
-				breath.isAdd = false;
+				//breaths[i].addPosition.x = -breaths[i].addPosition.x;
+				breaths[i].isAdd = false;
 
 				//既定の数を超えた場合、順番に消す
-				if (Count >= attackNumber)
-				{
-					breath.isStop = true;
-				}
-
-	
+			//	if (Count >= attackNumber)
+				//{
+					breaths[i].isStop = true;
+				//}
 			}
-			if (!breath.isStop)
+			if (!breaths[i].isStop)
 			{
-				breath.position = VSub(breath.position, breath.addPosition);
-				breath.radius += 0.1f;
+				breaths[i].position = VAdd(breaths[i].position, breaths[i].addPosition);
+				breaths[i].radius += 0.1f;
 				//エフェクト
-				breath.effectPosition = VGet(breath.position.x, breath.position.y,
-					breath.position.z);
+				breaths[i].effectPosition = VGet(breaths[i].position.x, breaths[i].position.y,
+					breaths[i].position.z);
 
-				breath.effect->StopEffect();
-				breath.effect->PlayEffect();
-				breath.effect->PositionUpdate(breath.effectPosition);
+				breaths[i].effect->StopEffect();
+				breaths[i].effect->PlayEffect();
+				breaths[i].effect->PositionUpdate(breaths[i].effectPosition);
 			}
 			stackCount++;
 
@@ -233,7 +206,7 @@ void EnemyBreath::ResetPosition(const VECTOR position)
 void EnemyBreath::Direction(VECTOR& addPosition)
 {
 
-	addPosition.z = addPosition_Z;
+	addPosition.z = -addPosition_Z;
 	addPosition.x = addPosition_X;
 
 	if (addPosition_X <= -0.4f)
@@ -274,5 +247,17 @@ void EnemyBreath::Direction(VECTOR& addPosition)
 		{
 			fixCount++;
 		}
+	}
+}
+
+void EnemyBreath::Rotation(VECTOR playerPos,VECTOR enemyPos)
+{
+
+	rotation = VSub(playerPos, enemyPos);
+	rotation = VNorm(rotation);
+
+	for (int i = 0; i < breathNumber; i++)
+	{
+		breaths[i].addPosition.x += rotation.x;
 	}
 }

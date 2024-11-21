@@ -14,7 +14,7 @@
 #include "Map.h"
 #include "Calculation.h"
 #include "ObjectManager.h"
-#include "BulletCalculation.h"
+#include "EnemyManager.h"
 #include <iostream>
 #include <array>
 
@@ -37,7 +37,7 @@ private:
     Camera* camera = NULL;
     Map* map = NULL;
     Calculation* calculation = NULL;
-    BulletCalculation* bulletCalculation = NULL;
+    EnemyManager* enemyManager = NULL;
     std::array<Object*, objectNumber> object = {
        NULL,
        NULL,

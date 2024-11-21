@@ -21,7 +21,7 @@
   <ItemGroup>
     <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="BaseScene.cpp" />
-    <ClCompile Include="BulletCalculation.cpp" />
+    <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="Calculation.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Effect.cpp" />
@@ -43,7 +43,7 @@
   <ItemGroup>
     <ClInclude Include="BackGround.h" />
     <ClInclude Include="BaseScene.h" />
-    <ClInclude Include="BulletCalculation.h" />
+    <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="Calculation.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Effect.h" />

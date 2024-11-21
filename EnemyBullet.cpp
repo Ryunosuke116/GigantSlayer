@@ -141,7 +141,7 @@ void EnemyBullet::Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttac
         {
             position.y += bulletSpeed_Y;
         }
-        //　0まで落下したとき
+        //　 0まで落下したとき
         else
         {
             isAttack = false;
@@ -187,86 +187,15 @@ void EnemyBullet::Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttac
 /// </summary>
 void EnemyBullet::AttackDesignation(const VECTOR EnemyPosition)
 {
-    /*//現在の弾の速度
-    VECTOR bulletSpeed = VGet(this->bulletSpeed.x, 0, this->bulletSpeed.z);
-    //円周率
-    float circleRadio = 3.14f;
-
-    //絶対値を求める
-    float absoluteValue = sqrt((playerPos.x - position.x) * (playerPos.x - position.x) +
-        (playerPos.z - position.z) * (playerPos.z - position.z));
-
-    //trueなら方向を求める
-    if (absoluteValue)
-    {
-        //±4の間の場合、0にする
-        if (absoluteValue <= 2.0f && absoluteValue >= -2.0f)
-        {
-            velocity = VGet(0, 0, 0);
-        }
-        else
-        {
-            velocity.x = (playerPos.x - position.x) / absoluteValue * speed;
-            velocity.y = (playerPos.y - position.y) / absoluteValue * speed;
-            velocity.z = (playerPos.z - position.z) / absoluteValue * speed;
-        }
-    }
-    else
-    {
-        velocity = VGet(0, 0, 0);
-    }
-
-    float rad = circleRadio / 180 * theta;
-
-    float vx1 = cos(rad) * bulletSpeed.x - sin(rad) * bulletSpeed.z;
-    float vz1 = sin(rad) * bulletSpeed.x + cos(rad) * bulletSpeed.z;
-
-        this->bulletSpeed.x = velocity.x;
-        this->bulletSpeed.z = velocity.z;
-
-    if (bulletSpeed.x * velocity.x + bulletSpeed.z * velocity.z >=
-        bulletSpeed.x * vx1 + bulletSpeed.z * vz1)
-    {
-    }
-    else
-    {
-        float vx2 = cos(rad) * bulletSpeed.x + sin(rad) * bulletSpeed.z;
-        float vz2 = -sin(rad) * bulletSpeed.x + cos(rad) * bulletSpeed.z;
-
-        float px = playerPos.x - position.x;
-        float pz = playerPos.z - position.z;
-
-        if (px * vx1 + pz * vz1 >= px * vx2 + pz * vz2)
-        {
-            //右回り
-            this->bulletSpeed.x = vx1;
-            this->bulletSpeed.z = vz1;
-        }
-        else
-        {
-            //左回り
-            this->bulletSpeed.x = vx2;
-            this->bulletSpeed.z = vz2;
-        }
-    }*/
-
-    //bulletSpeed = VGet(0, 0, 0);
-
 
     //弾を落とす位置を決める
     bulletSpeed = VSub(playerPos, position);
-    //絶対値を求める
-    float absoluteValue = VSize(bulletSpeed);
-
+    bulletSpeed.y = 0;
     //弾の弾道の正規化
     bulletSpeed = VNorm(bulletSpeed);
     //スピードを調整
     bulletSpeed = VScale(bulletSpeed, speed);
 
-    //弾の弾道の正規化
-    bulletSpeed = VNorm(bulletSpeed);
-    //スピードを調整
-    bulletSpeed = VScale(bulletSpeed, speed);
 
 }
 

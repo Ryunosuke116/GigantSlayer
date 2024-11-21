@@ -607,7 +607,6 @@ void Player::ChangeMotion(int motionNum)
 void Player::MotionUpdate()
 {
    
-    
     //downƒ‚[ƒVƒ‡ƒ“
     if (motionNum == down)
     {

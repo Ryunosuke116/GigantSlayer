@@ -45,7 +45,7 @@
     <ClCompile Include="EnemyCircleAttack.cpp">
       <Filter>ソース ファイル\GameScene\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="BulletCalculation.cpp">
+    <ClCompile Include="EnemyManager.cpp">
       <Filter>ソース ファイル\GameScene\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="EnemyBullet.cpp">
@@ -104,7 +104,7 @@
     <ClInclude Include="resource.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="BulletCalculation.h">
+    <ClInclude Include="EnemyManager.h">
       <Filter>ヘッダー ファイル\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="EnemyBreath.h">

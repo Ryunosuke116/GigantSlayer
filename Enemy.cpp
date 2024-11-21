@@ -143,7 +143,7 @@ void Enemy::GetPosition(VECTOR& setPosition)
 /// ç¿ïWÇïœçX
 /// </summary>
 /// <param name="getPosition"></param>
-void Enemy::SetPosition(VECTOR& getPosition)
+void Enemy::SetPosition(const VECTOR& getPosition)
 {
     playerPos = VGet(getPosition.x, getPosition.y, getPosition.z);
 }
@@ -344,7 +344,7 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
             if (playTime == 0)
             {
                 standTime = 0;
-                Order(bullet);
+                Order(bullet,breath);
 
                 if (isBulletNumber)
                 {
@@ -394,7 +394,7 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
 /// <summary>
 /// ìGÇÃçsìÆèá
 /// </summary>
-void Enemy::Order(EnemyBullet& bullet)
+void Enemy::Order(EnemyBullet& bullet,EnemyBreath& breath)
 {
     //íeçUåÇ
     if (orderNumber == 0)
@@ -429,6 +429,7 @@ void Enemy::Order(EnemyBullet& bullet)
     {
         orderNumber++;
         ChangeMotion(breathAttack);
+        breath.Rotation(playerPos, bottomPosition);
     }
     //ÉTÅ[ÉNÉãçUåÇ
     else if (orderNumber == 2)
