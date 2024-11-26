@@ -51,6 +51,7 @@ private:
     int attackEffectTime;
     int playingEffectHandle;
     int motionNumber;           //モーション番号
+    int HpHandle;               
 
     float currentJumpPower;		// Ｙ軸方向の速度
     float totalTime;            //モーションの総再生時間
