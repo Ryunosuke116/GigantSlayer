@@ -7,19 +7,22 @@
 /// </summary>
 Game::Game(SceneManager& manager) : BaseScene{ manager }
 {
-    // インスタンス化
-    input = new Input();
-    effect = new Effect();
-    player = new Player();
-    camera = new Camera();
-    map = new Map();
-    calculation = new Calculation();
-    enemyManager = new EnemyManager();
-    for (auto& objects : object)
+    if (player == NULL)
     {
-        objects = new Object();
+        // インスタンス化
+        input = new Input();
+        effect = new Effect();
+        player = new Player();
+        camera = new Camera();
+        map = new Map();
+        calculation = new Calculation();
+        enemyManager = new EnemyManager();
+        for (auto& objects : object)
+        {
+            objects = new Object();
+        }
+        enemy = new Enemy();
     }
-    enemy = new Enemy();
 }
 
 /// <summary>

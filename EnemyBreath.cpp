@@ -114,6 +114,7 @@ void EnemyBreath::Update()
 			//	if (Count >= attackNumber)
 				//{
 					breaths[i].isStop = true;
+					breaths[i].effect->StopEffect();
 				//}
 			}
 			if (!breaths[i].isStop)
@@ -143,7 +144,8 @@ void EnemyBreath::Update()
 	}
 	
 	//カウントに達した場合、攻撃終了
-	if (Count >= attackNumber + (attackNumber / 2))
+	//if (Count >= attackNumber + (attackNumber / 2))
+	if(Count >= breathNumber + (breathNumber / 2))
 	{
 		addPosition_X = 0;
 		isStopAdd = false;
@@ -209,12 +211,12 @@ void EnemyBreath::Direction(VECTOR& addPosition)
 	addPosition.z = -addPosition_Z;
 	addPosition.x = addPosition_X;
 
-	if (addPosition_X <= -0.4f)
+	if (addPosition_X <= -0.5f)
 	{
 		isDirection = false;
 		isStopAdd = true;
 	}
-	else if (addPosition_X >= 0.4f)
+	else if (addPosition_X >= 0.5f)
 	{
 		isDirection = true;
 		isStopAdd = true;

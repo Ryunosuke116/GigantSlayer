@@ -34,7 +34,7 @@ private:
 	bool isDirection;			//Œü‚«‚ð•Ï‚¦‚é‚©
 	bool isEffect;
  
-	static constexpr int breathNumber = 84;
+	static constexpr int breathNumber = 126;
 
 public:
 

@@ -6,7 +6,15 @@
 /// <summary>
 /// インスタンス化
 /// </summary>
-Title::Title(SceneManager& manager) : BaseScene{ manager } {}
+Title::Title(SceneManager& manager) : BaseScene{ manager } 
+{
+    if (camera == NULL)
+    {
+        camera = new Camera();
+    }
+
+    titleHandle = 0;
+}
 
 /// <summary>
 /// デストラクタ
@@ -21,7 +29,9 @@ Title::~Title()
 /// </summary>
 void Title::Initialize()
 {
-
+    titleHandle = LoadGraph("material/GigantSlayer_title.png");
+    backGroundHandle = MV1LoadModel("material/skyDome/sunSet.mv1");
+    camera->Initialize();
 }
 
 /// <summary>
@@ -33,6 +43,7 @@ void Title::Update()
     {
         ChangeScene("Game");
     }
+    camera->TitleUpdate();
 }
 
 /// <summary>
@@ -40,5 +51,7 @@ void Title::Update()
 /// </summary>
 void Title::Draw()
 {
+    MV1DrawModel(backGroundHandle);
+    DrawGraph(100, 100, titleHandle, true);
     printfDx("SPACE START");
 }

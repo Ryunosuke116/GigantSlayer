@@ -1,0 +1,11 @@
+diff a/EnemyBreath.cpp b/EnemyBreath.cpp	(rejected hunks)
+@@ -144,7 +144,8 @@
+ 	}
+ 	
+ 	//�J�E���g�ɒB�����ꍇ�A�U���I��
+-	if (Count >= attackNumber + (attackNumber / 2))
++	//if (Count >= attackNumber + (attackNumber / 2))
++	if(Count >= breathNumber + (breathNumber / 2))
+ 	{
+ 		addPosition_X = 0;
+ 		isStopAdd = false;

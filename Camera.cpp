@@ -62,6 +62,21 @@ void Camera::Update(const VECTOR& playerPosition,const VECTOR& enemyPosition)
 
 }
 
+void Camera::TitleUpdate()
+{
+
+	if (CheckHitKey(KEY_INPUT_2))
+	{
+		AimPosition.y = 90;
+	}
+	else
+	{
+		y = 20;
+	}
+
+	SetCameraPositionAndTarget_UpVecY(AimPosition, LookPosition);
+}
+
 /// <summary>
 /// •`‰æ
 /// </summary>
