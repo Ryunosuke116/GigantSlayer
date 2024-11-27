@@ -32,7 +32,6 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
-	void CircumferenceCalculation(float& x, float& z);
 	void SetPosition(const VECTOR position);
 	void SetEnemyPosition(const VECTOR position);
 	void ResetPosition(const VECTOR position);

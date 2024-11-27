@@ -77,6 +77,8 @@ void Enemy::Update()
         breath->isAttack = true;
     }
 
+    //攻撃の更新
+    bullet->Update(bottomPosition, *circleAttack);
     circleAttack->Update();
     breath->Update();
 
@@ -86,14 +88,13 @@ void Enemy::Update()
     }
     if (CheckHitKey(KEY_INPUT_4))
     {
+        breath->Rotation(playerPos, bottomPosition);
         ChangeMotion(breathAttack);
     }
 
     ActionFlow(*bullet, *circleAttack, *breath);
     //モーション更新
     MotionUpdate();
-
-    bullet->Update(bottomPosition, *circleAttack);
 
     //弾攻撃のモーション中は別でポジションを用意
     if (motionNum != bulletAttack)
@@ -375,6 +376,7 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
     //のけぞり
     if (isPlayerAttackHit)
     {
+        bullet.ResetAttack(bottomPosition);
         ChangeMotion(knockback);
         playTime = 19.0f;
         isPlayerAttackHit = false;

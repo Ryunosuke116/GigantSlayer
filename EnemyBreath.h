@@ -23,7 +23,6 @@ private:
 	VECTOR rotation;			//回転
 	Effect* effect;				//エフェクトクラス
 	float radius;				//半径
-	float addRotation_Y;			//加算成分
 	float addPosition_X;		//x成分に対する加算
 	float addPosition_Z;		//y成分に対する加算
 	int attackStack;			//何個の球を動かしているか		
@@ -35,6 +34,7 @@ private:
 	bool isEffect;
  
 	static constexpr int breathNumber = 126;
+	static constexpr float speed = 2.0f;
 
 public:
 
@@ -44,7 +44,6 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
-	void CircumferenceCalculation(float& x, float& z);
 	void Rotation(VECTOR playerPos, VECTOR enemyPos);
 	void SetPosition(const VECTOR position);
 	void Direction(VECTOR& addPosition);

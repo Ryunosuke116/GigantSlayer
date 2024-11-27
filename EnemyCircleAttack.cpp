@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 #include "Effect.h"
+#include "EnemyCalculation.h"
 #include "EnemyCircleAttack.h"
 
 /// <summary>
@@ -44,7 +45,7 @@ void EnemyCircleAttack::Initialize()
 		circleAttack.position = VGet(bulletPosition.x, bulletPosition.y, bulletPosition.z);
 		circleAttack.effectPosition = VGet(bulletPosition.x, bulletPosition.y - 10, bulletPosition.z);
 
-		CircumferenceCalculation(circleAttack.addPosition.x, circleAttack.addPosition.z);
+		EnemyCalculation::CircumferenceCalculation(circleAttack.addPosition, 0, 0,stack,speed);
 		effect->Initialize("material/TouhouStrategy/utsuho_sun_area1.efkefc", 1.0f, circleAttack.effectPosition);
 		
 		circleAttack.effect = effect;
@@ -120,25 +121,6 @@ void EnemyCircleAttack::Draw()
 	}
 		
 	
-}
-
-/// <summary>
-/// ‰~ŽüŒvŽZ
-/// </summary>
-/// <param name="x"></param>
-/// <param name="z"></param>
-void EnemyCircleAttack::CircumferenceCalculation(float& x,float& z)
-{
-	float circleRadio = 3.14f;
-
-	x = (2 * circleRadio) * stack / 360;
-	z = (2 * circleRadio) * stack / 360;
-	x = 0 + 1 * cos(x);
-	z = 0 + 1 * sin(z);
-
-	x *= speed;
-	z *= speed;
-
 }
 
 /// <summary>

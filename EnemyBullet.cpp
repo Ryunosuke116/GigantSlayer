@@ -106,7 +106,7 @@ void EnemyBullet::Draw()
 /// <summary>
 /// 動き
 /// </summary>
-void EnemyBullet::Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttack)
+void EnemyBullet::Move(const VECTOR enemyPosition,EnemyCircleAttack& circleAttack)
 {
     if (CheckHitKey(KEY_INPUT_9))
     {
@@ -144,10 +144,6 @@ void EnemyBullet::Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttac
         //　 0まで落下したとき
         else
         {
-            isAttack = false;
-            isEffect = true;
-            isSetUpMotion = false;
-            
             //サークル攻撃の場合、オブジェクトは発生しない
             if (isCircleBullet)
             {
@@ -158,17 +154,15 @@ void EnemyBullet::Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttac
                 isEmerge = true;
             }
 
-            //bulletが落ちた座標をcircleAttackに渡す
-            fellPosition = GetPosition();
-            circleAttack.SetPosition(fellPosition);
-            effectPosition = VGet(fellPosition.x, fellPosition.y, fellPosition.z);
-            bulletSpeed_Y = 2.5f;
+            //弾をリセット
+            ResetAttack(enemyPosition);
 
-            //bulletの座標をリセットする
-            position = VGet(EnemyPosition.x, EnemyPosition.y + 35, EnemyPosition.z);
-            bulletColor->PositionUpdate(position);
-            positionStack = 0;
-            scale = 0;
+            
+            //bulletが落ちた座標をcircleAttackに渡す
+            if (circleAttack.isAttack)
+            {
+                circleAttack.SetPosition(fellPosition);
+            }
 
             //サークル攻撃をしなければ再生
             if (!isCircleBullet)
@@ -180,6 +174,25 @@ void EnemyBullet::Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttac
         }
 
     }
+}
+
+void EnemyBullet::ResetAttack(const VECTOR& enemyPosition)
+{
+    isAttack = false;
+    isEffect = true;
+    isSetUpMotion = false;
+
+    //落下地点を保存
+    fellPosition = GetPosition();
+    effectPosition = VGet(fellPosition.x, fellPosition.y, fellPosition.z);
+
+    //bulletの座標をリセットする
+    position = VGet(enemyPosition.x, enemyPosition.y + 35, enemyPosition.z);
+    bulletColor->PositionUpdate(position);
+    bulletColor->StopEffect();
+    positionStack = 0;
+    scale = 0;
+    bulletSpeed_Y = 2.5f;
 }
 
 /// <summary>

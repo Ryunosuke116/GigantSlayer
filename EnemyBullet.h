@@ -45,6 +45,7 @@ public:
         EnemyCircleAttack& circleAttack);
     void Draw();
     void Move(const VECTOR EnemyPosition,EnemyCircleAttack& circleAttack);
+    void ResetAttack(const VECTOR& enemyPosition);
     void BulletMove();
     void AttackDesignation(const VECTOR EnemyPosition);
     void SetPlayerMoveSpeed(float moveSpeed);

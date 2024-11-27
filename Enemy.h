@@ -48,6 +48,7 @@ private:
     int orderNumber;                    //s“®‚·‚é‡
     int bulletNumber;                   //Œ»İ‚ÌUŒ‚‰ñ”
     int maxBulletNumber;                //Å‘åUŒ‚‰ñ”
+    int HP;
     float totalTime;                    //ƒ‚[ƒVƒ‡ƒ“‚Ì‘Ä¶ŠÔ
     
     

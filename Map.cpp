@@ -36,7 +36,7 @@ void Map::Initialize()
     MV1SetPosition(fieldHandle, fieldPosition);
 
     //ƒ‚ƒfƒ‹‚Ì‘å‚«‚³’²®
-    MV1SetScale(fieldHandle, VGet(0.22f, 0.22f, 0.22f));
+    MV1SetScale(fieldHandle, VGet(0.17f, 0.17f, 0.17f));
 
 }
 

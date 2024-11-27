@@ -82,6 +82,7 @@ void Camera::TitleUpdate()
 /// </summary>
 void Camera::Draw()
 {
+	printfDx("AimPosition.z %f", AimPosition.z);
 }
 
 /// <summary>
@@ -92,9 +93,11 @@ void Camera::Leap(const VECTOR& playerPosition, const VECTOR& enemyPosition)
 {
 	VECTOR AimPosition = VGet(0, 0, 0);		//Ž‹“_
 	VECTOR LookPosition = VGet(0, 0, 0);	//Œ©‚éÀ•W
+	float Aim_X = playerPosition.x / 2.5f;
+	float Aim_Z = playerPosition.z / 2;
 
-	AimPosition = VGet(playerPosition.x, 20, playerPosition.z - 30);
-	LookPosition = VGet(playerPosition.x, 0, enemyPosition.z);
+	AimPosition = VGet(Aim_X, 20, Aim_Z - 40);
+	LookPosition = VGet(playerPosition.x, 0, enemyPosition.z - 20);
 
 	VECTOR SubAimPosition = VSub(AimPosition, this->AimPosition);
 	VECTOR SubLookPosition = VSub(LookPosition, this->LookPosition);

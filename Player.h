@@ -19,7 +19,7 @@ private:
     static constexpr float	Gravity     = 0.08f;	// 重力
     static constexpr float  AttackGravity = 0.15f;  //攻撃の重力
     static constexpr float	AngleSpeed  = 0.4f;	    // 角度変化速度
-    static constexpr float  maxRange    = 42.0f;    //最大範囲
+    static constexpr float  maxRange    = 33.0f;    //最大範囲
     static constexpr int objectNumber = 4;      //オブジェクトの数
 
     static constexpr int    down = 0;           //ダウンする

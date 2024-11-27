@@ -3,7 +3,8 @@
 #include <cmath>
 #include "Effect.h"
 #include "Enemy.h"
-#include"object.h"
+#include "object.h"
+#include "EnemyCalculation.h"
 #include "EnemyBreath.h"
 
 /// <summary>
@@ -16,7 +17,6 @@ EnemyBreath::EnemyBreath()
 	rotation = VGet(0, 0, 0);
 	addPosition_X = 0;
 	addPosition_Z = 0;
-	addRotation_Y = 0;
 	effectPlayStack = 0;
 	radius = 0;
 	Count = 0;
@@ -44,7 +44,7 @@ void EnemyBreath::Initialize()
 	rotation = VGet(0, 20.5f, 0);
 	addPosition_X = 0;
 	addPosition_Z = 2.0f;
-	addRotation_Y = 0.0175f;
+
 	fixCount = 3;
 	isDirection = false;
 	attackNumber += breathNumber * 2;
@@ -63,7 +63,6 @@ void EnemyBreath::Initialize()
 		breath.effectPosition = VGet(formerPosition.x, formerPosition.y - 10, formerPosition.z);
 		breath.radius = 2;
 
-		Direction(breath.addPosition);
 		auto effect = new Effect;
 	
 		effect->Initialize("material/TouhouStrategy/utsuho_sun_area1.efkefc", 1.0f, breath.effectPosition);
@@ -73,6 +72,7 @@ void EnemyBreath::Initialize()
 
 		breaths.push_back(breath);
 	}
+
 
 	radius = 3;
 }
@@ -85,8 +85,6 @@ void EnemyBreath::Update()
 	if (isAttack)
 	{
 		isEffect = true;
-
-	
 
 		const float maxTravelDistance = -34.0f;	//ブレスの最大移動距離
 			
@@ -110,12 +108,9 @@ void EnemyBreath::Update()
 				//breaths[i].addPosition.x = -breaths[i].addPosition.x;
 				breaths[i].isAdd = false;
 
-				//既定の数を超えた場合、順番に消す
-			//	if (Count >= attackNumber)
-				//{
-					breaths[i].isStop = true;
-					breaths[i].effect->StopEffect();
-				//}
+				//順番に消す
+				breaths[i].isStop = true;
+				breaths[i].effect->StopEffect();
 			}
 			if (!breaths[i].isStop)
 			{
@@ -144,7 +139,6 @@ void EnemyBreath::Update()
 	}
 	
 	//カウントに達した場合、攻撃終了
-	//if (Count >= attackNumber + (attackNumber / 2))
 	if (Count >= breathNumber + (breathNumber / 2))
 	{
 		addPosition_X = 0;
@@ -160,7 +154,6 @@ void EnemyBreath::Update()
 		for (auto& breath : breaths)
 		{
 			breath.radius = 2;
-			Direction(breath.addPosition);
 			breath.isStop = false;
 			breath.effect->StopEffect();
 		}
@@ -201,65 +194,63 @@ void EnemyBreath::ResetPosition(const VECTOR position)
 	}
 }
 
-/// <summary>
-///	方向を反転する
-/// </summary>
-/// <param name="addPosition"></param>
-void EnemyBreath::Direction(VECTOR& addPosition)
-{
 
-	addPosition.z = -addPosition_Z;
-	addPosition.x = addPosition_X;
-
-	if (addPosition_X <= -0.5f)
-	{
-		isDirection = false;
-		isStopAdd = true;
-	}
-	else if (addPosition_X >= 0.5f)
-	{
-		isDirection = true;
-		isStopAdd = true;
-	}
-
-	if (fixCount >= 3)
-	{
-		isStopAdd = false;
-		fixCount = 0;
-	}
-
-	if (!isDirection)
-	{
-		if (!isStopAdd)
-		{
-			addPosition_X += 0.02f;
-		}
-		else
-		{
-			fixCount++;
-		}
-	}
-	else
-	{
-		if (!isStopAdd)
-		{
-			addPosition_X -= 0.02f;
-		}
-		else
-		{
-			fixCount++;
-		}
-	}
-}
 
 void EnemyBreath::Rotation(VECTOR playerPos,VECTOR enemyPos)
 {
-
+	//敵が攻撃モーションに入る前に方向ベクトルを求める
 	rotation = VSub(playerPos, enemyPos);
+	rotation.y = 0;
 	rotation = VNorm(rotation);
 
-	for (int i = 0; i < breathNumber; i++)
+	float angle = atan2(rotation.z, rotation.x);
+	float angleDegree = angle * 180 / DX_PI_F;
+	float maxDeg = angleDegree + 30.0f;
+	float minDeg = angleDegree - 30.0f;
+
+	for (auto& breath : breaths)
 	{
-		breaths[i].addPosition.x += rotation.x;
+		EnemyCalculation::CircumferenceCalculation(breath.addPosition, rotation.x, rotation.z, angleDegree, speed);
+		
+		if (angleDegree <= minDeg)
+		{
+			isDirection = false;
+			isStopAdd = true;
+		}
+		else if (angleDegree >= maxDeg)
+		{
+			isDirection = true;
+			isStopAdd = true;
+		}
+
+		if (fixCount >= 3)
+		{
+			isStopAdd = false;
+			fixCount = 0;
+		}
+
+		if (!isDirection)
+		{
+			if (!isStopAdd)
+			{
+				angleDegree += 1.0f;
+			}
+			else
+			{
+				fixCount++;
+			}
+		}
+		else
+		{
+			if (!isStopAdd)
+			{
+				angleDegree -= 1.0f;
+			}
+			else
+			{
+				fixCount++;
+			}
+		}
 	}
+
 }
