@@ -48,10 +48,7 @@ public:
     void ResetAttack(const VECTOR& enemyPosition);
     void BulletMove();
     void AttackDesignation(const VECTOR EnemyPosition);
-    void SetPlayerMoveSpeed(float moveSpeed);
-    void PlayerMovementPrediction();
-    void SetIsPlayerMove(bool isMove);
-    void SetIsPlayerMoveDirection(bool isTopMove, bool isBottomMove, bool isRightMove, bool isLeftMove);
+  
     void SetPlayerPosition(VECTOR& getPosition);
     void SetPosition(VECTOR& getPosition);
     void SwitchingIsCircleBullet();

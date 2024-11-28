@@ -1,3 +1,4 @@
+#include "DxLib.h"
 #include "Result.h"
 
 /// <summary>
@@ -26,7 +27,10 @@ void Result::Initialize()
 /// </summary>
 void Result::Update()
 {
-
+    if (CheckHitKey(KEY_INPUT_SPACE))
+    {
+        ChangeScene("Title");
+    }
 }
 
 /// <summary>

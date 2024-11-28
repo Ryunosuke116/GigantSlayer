@@ -19,6 +19,8 @@ Object::Object()
     isGetPosition = false;
     isCanCatch = false;
     isHitBreath = false;
+    effect = new Effect();
+    effect->Initialize("material/TouhouStrategy/black.efkefc", 1.2f, position);
 }
 
 /// <summary>
@@ -34,11 +36,18 @@ Object::~Object()
 /// </summary>
 void Object::Initialize(Enemy& enemy)
 {
-    effect = new Effect();
-    effect->Initialize("material/TouhouStrategy/black.efkefc", 1.2f, position);
+    position = VGet(0, 0, 0);
+    addPosition = VGet(0, 0, 0);
+    radius = 3;
+    isHitPlayer = false;
+    isHit = false;
+    isGetPosition = false;
+    isCanCatch = false;
+    isHitBreath = false;
     enemy.GetPosition(position);
     addPosition = VGet(1, 0, 1);
     isObject = false;
+    effect->StopEffect();
 }
 
 /// <summary>

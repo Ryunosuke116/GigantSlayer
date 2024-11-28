@@ -22,7 +22,6 @@ private:
 	VECTOR effectPosition;		//エフェクトのポジション
 	VECTOR rotation;			//回転
 	Effect* effect;				//エフェクトクラス
-	float radius;				//半径
 	float addPosition_X;		//x成分に対する加算
 	float addPosition_Z;		//y成分に対する加算
 	int attackStack;			//何個の球を動かしているか		

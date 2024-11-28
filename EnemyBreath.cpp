@@ -18,13 +18,34 @@ EnemyBreath::EnemyBreath()
 	addPosition_X = 0;
 	addPosition_Z = 0;
 	effectPlayStack = 0;
-	radius = 0;
 	Count = 0;
 	attackNumber = 0;
 	fixCount = 0;
 	attackStack = 1;
 	isStopAdd = false;
 	isDirection = false;
+
+	for (int i = 0; i < breathNumber; i++)
+	{
+		Breath breath;
+		breath.isAdd = false;
+		breath.isStop = false;
+		breath.addPosition = VGet(0, 0, 0);
+		breath.position = VGet(formerPosition.x, formerPosition.y, formerPosition.z);
+		breath.effectPosition = VGet(formerPosition.x, formerPosition.y - 10, formerPosition.z);
+		breath.radius = 2;
+
+		auto effect = new Effect;
+
+		effect->Initialize("material/TouhouStrategy/utsuho_sun_area1.efkefc", 1.0f, breath.effectPosition);
+
+		breath.effect = effect;
+		effect->SetPosition(breath.effectPosition);
+
+		breaths.push_back(breath);
+	}
+
+
 }
 
 /// <summary>
@@ -40,6 +61,16 @@ EnemyBreath::~EnemyBreath()
 /// </summary>
 void EnemyBreath::Initialize()
 {
+	for (auto& breath : breaths)
+	{
+		breath.isAdd = false;
+		breath.isStop = false;
+		breath.addPosition = VGet(0, 0, 0);
+		breath.position = VGet(formerPosition.x, formerPosition.y, formerPosition.z);
+		breath.effectPosition = VGet(formerPosition.x, formerPosition.y - 10, formerPosition.z);
+		breath.radius = 2;
+	}
+
 	effectPosition = VGet(formerPosition.x, formerPosition.y, formerPosition.z - 30.0f);
 	rotation = VGet(0, 20.5f, 0);
 	addPosition_X = 0;
@@ -48,33 +79,7 @@ void EnemyBreath::Initialize()
 	fixCount = 3;
 	isDirection = false;
 	attackNumber += breathNumber * 2;
-	//effect = new Effect();
-	//effect->Initialize("material/TouhouStrategy/fire.efkefc", 10.0f, effectPosition);
 
-	
-
-	for (int i = 0; i < breathNumber; i++)
-	{
-		Breath breath;
-		breath.isAdd = false;
-		breath.isStop = false;
-		breath.addPosition = VGet(0, 0, 0);
-		breath.position = VGet(formerPosition.x, formerPosition.y, formerPosition.z);
-		breath.effectPosition = VGet(formerPosition.x, formerPosition.y - 10, formerPosition.z);
-		breath.radius = 2;
-
-		auto effect = new Effect;
-	
-		effect->Initialize("material/TouhouStrategy/utsuho_sun_area1.efkefc", 1.0f, breath.effectPosition);
-
-		breath.effect = effect;
-		effect->SetPosition(breath.effectPosition);
-
-		breaths.push_back(breath);
-	}
-
-
-	radius = 3;
 }
 
 /// <summary>

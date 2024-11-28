@@ -40,6 +40,13 @@ Player::Player()
     currentJumpPower = 0;
     playingEffectHandle = -1;
     motionNumber = 0;
+    //モデルの読み込み
+    modelHandle = MV1LoadModel("material/mv1/maria_1023.mv1");
+
+    MV1SetScale(modelHandle, VGet(0.04f, 0.04f, 0.04f));
+    //エフェクトのインスタンス化、初期化
+    effect = new Effect();
+    attackEffect = new Effect();
 }
 
 /// <summary>
@@ -55,19 +62,21 @@ Player::~Player()
 /// </summary>
 void Player::Initialize()
 {
-    //モデルの読み込み
-    modelHandle = MV1LoadModel("material/mv1/maria_1023.mv1");
+    position = VGet(0, 0, 0);
+    targetMoveDirection = VGet(0, 0, 0);
+    objectPosition = VGet(0, 5, 0);
+    keepTargetMoveDirection = VGet(0, 0, 0);
+    effectPosition = VGet(0, 0, 0);
+    topSpherePosition = VGet(0, 0, 0);
+    bottomSpherePosition = VGet(0, 0, 0);
+    testPosition = VGet(0, 0, 0);
 
-    MV1SetScale(modelHandle, VGet(0.04f, 0.04f, 0.04f));
 
     //待機モーション読み込み
     ChangeMotion(stand);
 
     effectPosition = VGet(objectPosition.x, objectPosition.y, objectPosition.z);
     
-    //エフェクトのインスタンス化、初期化
-    effect = new Effect();
-    attackEffect = new Effect();
     effect->Initialize("material/TouhouStrategy/miko_hihou_effect.efkefc",1.2f, effectPosition);
     attackEffect->Initialize("material/TouhouStrategy/explosion.efkefc", 0.5f, effectPosition);
 }

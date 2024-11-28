@@ -14,13 +14,32 @@ EnemyCircleAttack::EnemyCircleAttack()
 	bulletPosition = VGet(0, 0, 0);
 	addPosition_X = 0;
 	addPosition_Z = 0;
-	radius = 0;
-	stack = 0;
 	Count = 0;
 	attackStack = 1;
 	is = false;
 	isAttack = false;
 	isSetPosition = false;
+
+	int stack = 0;
+	int circleAttackNum = 36;
+
+	for (int i = 0; i < circleAttackNum; i++)
+	{
+		auto effect = new Effect;
+		circleAttack.addPosition = VGet(0, 0, 0);
+		circleAttack.position = VGet(bulletPosition.x, bulletPosition.y, bulletPosition.z);
+		circleAttack.effectPosition = VGet(bulletPosition.x, bulletPosition.y - 10, bulletPosition.z);
+
+		EnemyCalculation::CircumferenceCalculation(circleAttack.addPosition, 0, 0, stack, speed);
+		effect->Initialize("material/TouhouStrategy/utsuho_sun_area1.efkefc", 1.0f, circleAttack.effectPosition);
+
+		circleAttack.effect = effect;
+		effect->SetPosition(circleAttack.effectPosition);
+		stack += 5;
+		circleAttacks.push_back(circleAttack);
+
+	}
+
 }
 
 /// <summary>
@@ -35,28 +54,18 @@ EnemyCircleAttack::~EnemyCircleAttack()
 /// èâä˙âª
 /// </summary>
 void EnemyCircleAttack::Initialize()
-{
-	int circleAttackNum = 36;
+{	
+	int stack = 0;
 
-	for (int i = 0; i < circleAttackNum; i++)
+	for (auto& CircleAttack : circleAttacks)
 	{
-		auto effect = new Effect;
 		circleAttack.addPosition = VGet(0, 0, 0);
 		circleAttack.position = VGet(bulletPosition.x, bulletPosition.y, bulletPosition.z);
 		circleAttack.effectPosition = VGet(bulletPosition.x, bulletPosition.y - 10, bulletPosition.z);
 
-		EnemyCalculation::CircumferenceCalculation(circleAttack.addPosition, 0, 0,stack,speed);
-		effect->Initialize("material/TouhouStrategy/utsuho_sun_area1.efkefc", 1.0f, circleAttack.effectPosition);
-		
-		circleAttack.effect = effect;
-		effect->SetPosition(circleAttack.effectPosition);
+		EnemyCalculation::CircumferenceCalculation(circleAttack.addPosition, 0, 0, stack, speed);
 		stack += 5;
-		circleAttacks.push_back(circleAttack);
-		
 	}
-	
-	radius = 2;
-	
 }
 
 /// <summary>

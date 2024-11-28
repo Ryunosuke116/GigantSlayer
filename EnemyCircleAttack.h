@@ -15,15 +15,15 @@ private:
 	CircleAttack circleAttack;
 	VECTOR bulletPosition;
 	VECTOR enemyPosition;
-	float radius;
+
 	float addPosition_X;
 	float addPosition_Z;
-	int stack;
 	int attackStack;
 	bool is; 
 	bool isSetPosition;
 
 	static constexpr float speed = 1.5f;
+	static constexpr float radius = 2;
 public:
 
 	EnemyCircleAttack();
