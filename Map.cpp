@@ -10,8 +10,11 @@ Map::Map()
 {
     backGroundHandle = -1;
     fieldHandle = -1;
+    time = 0;
     position = VGet(0, 0, 0);
+    effectPosition = VGet(0, 0, 50);
     fieldPosition = VGet(0, 0, 0);
+    effect = new Effect();
 }
 
 /// <summary>
@@ -32,12 +35,27 @@ void Map::Initialize()
     // スカイドームのポジション設定
     backGroundHandle = MV1LoadModel("material/skyDome/sunSet.mv1");
     fieldHandle = MV1LoadModel("material/uploads_files_2988017_round+table.mv1");
+    effect->Initialize("material/TouhouStrategy/Background.efkefc", 1.2f, effectPosition);
     MV1SetPosition(backGroundHandle, position);
     MV1SetPosition(fieldHandle, fieldPosition);
 
     //モデルの大きさ調整
     MV1SetScale(fieldHandle, VGet(0.17f, 0.17f, 0.17f));
 
+}
+
+void Map::Update()
+{
+    // 定期的にエフェクトを再生する
+    if (time % 1200 == 0)
+    {
+        effect->StopEffect();
+        effect->PlayEffect();
+        effect->SetRotation(VGet(0, 10, 0));
+    }
+
+    //時間を経過させる
+    time++;
 }
 
 /// <summary>

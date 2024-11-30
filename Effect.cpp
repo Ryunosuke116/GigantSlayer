@@ -39,18 +39,11 @@ void Effect::Initialize(const char* path,float magnification,const VECTOR& objec
 void Effect::PositionUpdate(const VECTOR& objectPosition)
 {
     position = VGet(objectPosition.x, objectPosition.y, objectPosition.z);
-  //  position.y -= 4;
 
-
-    // 定期的にエフェクトを再生する
-    if (time % 120 == 0)
-    {
-    }
 
     // 再生中のエフェクトを移動する。
     SetPosPlayingEffekseer3DEffect(playingEffectHandle, position.x, position.y, position.z);
-    // 時間を経過させる。
-    time++;
+
 }
 
 void Effect::PlayEffectUpdate()

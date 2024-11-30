@@ -56,6 +56,7 @@ void Game::Initialize()
 void Game::Update()
 {
     //アップデート
+    map->Update();
     input->Update();
     camera->Update(player->GetPosition(), enemy->GetTopPosition());
     enemyManager->Update(*player, *enemy);
