@@ -24,6 +24,7 @@ Enemy::Enemy()
     addPlayTime = 0;
     standTime = 0;
     playerMoveSpeed = 0;
+    HP = 0;
     bulletSpeed_Y = 0.95;
     motionNum = 0;
     isAttack = false;
@@ -41,7 +42,7 @@ Enemy::~Enemy()
 /// </summary>
 void Enemy::Initialize()
 {
-
+    HP = 3;
     bottomPosition = VGet(0, -30, 60);
     bulletPosition = VGet(bottomPosition.x, bottomPosition.y + 20, bottomPosition.z);
     radius = 18;
@@ -62,6 +63,7 @@ void Enemy::Initialize()
 
     //待機モーション読み込み
     ChangeMotion(stand);
+
 }
 
 /// <summary>
@@ -122,9 +124,7 @@ void Enemy::Draw()
     circleAttack->Draw();
     breath->Draw();
 
-    printfDx("x.%f\n", bulletPosition.x);
-    printfDx("y.%f\n", bulletPosition.y);
-    printfDx("z.%f\n", bulletPosition.z);
+    printfDx("enemy.HP %d\n", HP);
     if (isPlayerMove)
     {
         printfDx("移動中\n", isPlayerMove);
@@ -161,10 +161,7 @@ void Enemy::AttackDesignation()
 
     //弾を落とす位置を決める
     bulletSpeed = VSub(playerPos, bulletPosition);
-    if (isPlayerMove)
-    {
-        PlayerMovementPrediction();
-    }
+   
     bulletSpeed = VScale(bulletSpeed, 0.025);
 
 }
@@ -178,43 +175,7 @@ void Enemy::SetPlayerMoveSpeed(float moveSpeed)
     playerMoveSpeed = moveSpeed;
 }
 
-/// <summary>
-/// プレイヤーが移動時に未来の座標を計算
-/// </summary>
-void Enemy::PlayerMovementPrediction()
-{
-    //40フレーム先のプレイヤーのポジションを探る
-    playerMoveSpeed *= 40;
 
-    futurePosition = VGet(0, 0, 0);
-    
-    if (isTopMove)
-    {
-        futurePosition = VAdd(futurePosition, VGet(0, 0, 1));
-    }
-    if (isBottomMove)
-    {
-        futurePosition = VAdd(futurePosition, VGet(0, 0, -1));
-    }
-    if (isRightMove)
-    {
-        futurePosition = VAdd(futurePosition, VGet(1, 0, 0));
-    }
-    if (isLeftMove)
-    {
-        futurePosition = VAdd(futurePosition, VGet(-1, 0, 0));
-    }
-
-    if (isPlayerMove)
-    {
-        futurePosition = VNorm(futurePosition);
-        futurePosition = VScale(futurePosition, playerMoveSpeed);
-    }
-
-    bulletSpeed = VAdd(bulletSpeed, futurePosition);
-  
-  
-}
 
 /// <summary>
 /// プレイヤーが動いているかどうか
@@ -225,20 +186,7 @@ void Enemy::SetIsPlayerMove(bool isMove)
     isPlayerMove = isMove;
 }
 
-/// <summary>
-/// プレイヤーがどの方向に動いているか
-/// </summary>
-/// <param name="isTopMove"></param>
-/// <param name="isBottomMove"></param>
-/// <param name="isRightMove"></param>
-/// <param name="isLeftMove"></param>
-void Enemy::SetIsPlayerMoveDirection(bool isTopMove, bool isBottomMove, bool isRightMove, bool isLeftMove)
-{
-    this->isTopMove = isTopMove;
-    this->isBottomMove = isBottomMove;
-    this->isRightMove = isRightMove;
-    this->isLeftMove = isLeftMove;
-}
+
 
 /// <summary>
 /// モーション切り替え
@@ -376,6 +324,7 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
     //のけぞり
     if (isPlayerAttackHit)
     {
+        HP--;
         bullet.ResetAttack(bottomPosition);
         ChangeMotion(knockback);
         playTime = 19.0f;

@@ -24,10 +24,11 @@ private:
 
     static constexpr int    down = 0;           //ダウンする
     static constexpr int    standUp = 1;        //立ち上がる
-    static constexpr int    jump = 3;           //ジャンプ
-    static constexpr int    stop = 12;           //止まる
+    static constexpr int    jump = 13;           //ジャンプ
+    static constexpr int    stop = 10;           //止まる
     static constexpr int    stand = 2;          //待機
-    static constexpr int    run = 9;           //歩く
+    static constexpr int    run = 7;           //歩く
+    static constexpr int    pickUp = 4;         //拾う
 
     VECTOR position;
     VECTOR targetMoveDirection;	// モデルが向くべき方向のベクトル
@@ -51,7 +52,8 @@ private:
     int attackEffectTime;
     int playingEffectHandle;
     int motionNumber;           //モーション番号
-    int HpHandle;               
+    int HpHandle;      
+    int HP;
 
     float currentJumpPower;		// Ｙ軸方向の速度
     float totalTime;            //モーションの総再生時間
@@ -99,8 +101,6 @@ public:
     float GetMoveSpeed() { return MoveSpeed; }
     bool GetIsMove() { return isMove; }
     VECTOR GetPosition() { return position; }
-    bool isLeftMove;
-    bool isRightMove;
-    bool isTopMove;
-    bool isBottomMove;
+    int GetHP() { return HP; }
+
 };

@@ -21,14 +21,11 @@ Player::Player()
     
     angle = 0;
     stock = 0;
+    HP = 0;
 
     attackEffectTime = 0;
     isHitEnemyAttack = false;
     isMove = false;
-    isTopMove = false;
-    isBottomMove = false;
-    isRightMove = false;
-    isLeftMove = false;
     isJump = false;
     isOnGround = false;
     isPushKey = false;
@@ -41,7 +38,7 @@ Player::Player()
     playingEffectHandle = -1;
     motionNumber = 0;
     //モデルの読み込み
-    modelHandle = MV1LoadModel("material/mv1/maria_1023.mv1");
+    modelHandle = MV1LoadModel("material/mv1/maria_1204.mv1");
 
     MV1SetScale(modelHandle, VGet(0.04f, 0.04f, 0.04f));
     //エフェクトのインスタンス化、初期化
@@ -62,6 +59,7 @@ Player::~Player()
 /// </summary>
 void Player::Initialize()
 {
+    HP = 3;
     position = VGet(0, 0, 0);
     targetMoveDirection = VGet(0, 0, 0);
     objectPosition = VGet(0, 5, 0);
@@ -98,6 +96,7 @@ void Player::Update(Calculation& calculation,
     //playerの向き調整
     UpdateAngle();
 
+    //攻撃をされたときは動かせない
     if (!(motionNum == down || motionNum == standUp))
     {
         //移動
@@ -149,10 +148,10 @@ void Player::Update(Calculation& calculation,
             number++;
         }
 
+
         //敵の攻撃の当たり判定
         EnemyHitCheck(enemy, calculation);
    
-    
         Down();
     }
    
@@ -234,16 +233,11 @@ void Player::Draw()
        // clsDx();
     }
     //デバック表示
+    printfDx("player.HP %d\n",HP);
     printfDx("x.%f\n",position.x);
     printfDx("y.%f\n", position.y);
     printfDx("z.%f\n", position.z);
     printfDx("stock.%d\n",stock);
-    printfDx("closePosition.x %f\n", closePosition.x);
-    printfDx("closePosition.y %f\n", closePosition.y);
-    printfDx("closePosition.z %f\n", closePosition.z);
-    printfDx("effect.x %f\n", effectPosition.x);
-    printfDx("effect.y %f\n", effectPosition.y);
-    printfDx("effect.z %f\n", effectPosition.z);
 
 
     MV1DrawModel(modelHandle);
@@ -316,41 +310,24 @@ void Player::Move(const Input& input, VECTOR& moveVec)
     {
         moveVec = VAdd(moveVec, VGet(0, 0, 1));
         isMove = true;
-        isTopMove = true;
     }
-    else
-    {
-        isTopMove = false;
-    }
+   
     if (input.GetNowFrameInput() & PAD_INPUT_DOWN)
     {
         moveVec = VAdd(moveVec, VGet(0, 0, -1));
-        isMove = true;
-        isBottomMove = true;
+        isMove = true;  
     }
-    else
-    {
-        isBottomMove = false;
-    }
+
     if (input.GetNowFrameInput() & PAD_INPUT_LEFT)
     {
         moveVec = VAdd(moveVec, VGet(-1, 0, 0));
         isMove = true;
-        isLeftMove = true;
     }
-    else
-    {
-        isLeftMove = false;
-    }
+ 
     if (input.GetNowFrameInput() & PAD_INPUT_RIGHT)
     {
         moveVec = VAdd(moveVec, VGet(1, 0, 0));
         isMove = true;
-        isRightMove = true;
-    }
-    else
-    {
-        isRightMove = false;
     }
 
     //ジャンプしていないときにジャンプボタンが押されたときジャンプ力を加える
@@ -410,6 +387,7 @@ void Player::PickUpObject(Object& object, const Input& input)
     //オブジェクトとプレイヤーが当たった場合消す
     if (input.GetNowFrameInput() & PAD_INPUT_X || CheckHitKey(KEY_INPUT_5))
     {
+        ChangeMotion(pickUp);
         object.PlayerIsHit(true);
         //球に触れたときストックを増やす
         stock++;
@@ -587,6 +565,7 @@ void Player::Down()
     //攻撃に当たった場合、少しの間行動不能にする　
     if (isHitEnemyAttack)
     {
+        //HP--;
         ChangeMotion(down);
     }
 }

@@ -50,6 +50,8 @@ void EnemyBullet::Initialize(const VECTOR EnemyPosition)
     //‰Šú‰»
     effect->Initialize("material/TouhouStrategy/patch_stElmo_area.efkefc", 1.2f,position);
     bulletColor->Initialize("material/TouhouStrategy/enemyBullet.efkefc", 1.6f, position);
+    effect->StopEffect();
+    bulletColor->StopEffect();
 }
 
 /// <summary>

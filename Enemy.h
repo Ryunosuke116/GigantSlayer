@@ -17,7 +17,6 @@ public:
     VECTOR GetTopPosition() { return topPosition; }
     VECTOR GetBottomPosition() { return bottomPosition; }
     
-    float GetRadius() { return radius; }
     void SetIsPlayerAttackHit(const bool value) { isPlayerAttackHit = value; }
     void ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
         EnemyBreath& breath);
@@ -33,6 +32,10 @@ public:
     //モーション関連
     void ChangeMotion(int numberNum);
     void MotionUpdate();
+
+    //ゲッター
+    int GetHP() { return HP; }
+    float GetRadius() { return radius; }
 
     // インスタンス化
     EnemyBullet* bullet = new EnemyBullet();

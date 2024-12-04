@@ -14,6 +14,7 @@ private:
     VECTOR position;
     VECTOR fieldPosition;
     VECTOR effectPosition;
+    VECTOR rotationPosition;
     Effect* effect;
 public:
     Map();

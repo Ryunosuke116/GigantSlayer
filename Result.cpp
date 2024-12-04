@@ -38,5 +38,5 @@ void Result::Update()
 /// </summary>
 void Result::Draw()
 {
-
+    printfDx("SPACE START");
 }

@@ -48,6 +48,7 @@ void Game::Initialize()
     {
         (*objects).Initialize(*enemy);
     }
+    
 }
 
 /// <summary>
@@ -70,9 +71,9 @@ void Game::Update()
 
     effect->PlayEffectUpdate();
 
-    if (CheckHitKey(KEY_INPUT_LSHIFT))
+    if (player->GetHP() <= 0 || enemy->GetHP() <= 0)
     {
-        ChangeScene("Title");
+        ChangeScene("Result");
     }
 }
 

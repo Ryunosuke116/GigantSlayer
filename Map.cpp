@@ -12,8 +12,9 @@ Map::Map()
     fieldHandle = -1;
     time = 0;
     position = VGet(0, 0, 0);
-    effectPosition = VGet(0, 0, 50);
+    effectPosition = VGet(0, 0, 150);
     fieldPosition = VGet(0, 0, 0);
+    rotationPosition = VGet(0, 0, 0);
     effect = new Effect();
 }
 
@@ -31,11 +32,11 @@ Map::~Map()
 void Map::Initialize()
 {
     fieldPosition = VGet(0, -1, 0);
-
+    rotationPosition = VGet(0, 3.2f, 0);
     // スカイドームのポジション設定
     backGroundHandle = MV1LoadModel("material/skyDome/sunSet.mv1");
     fieldHandle = MV1LoadModel("material/uploads_files_2988017_round+table.mv1");
-    effect->Initialize("material/TouhouStrategy/Background.efkefc", 1.2f, effectPosition);
+    effect->Initialize("material/TouhouStrategy/Background.efkefc", 3.0f, effectPosition);
     MV1SetPosition(backGroundHandle, position);
     MV1SetPosition(fieldHandle, fieldPosition);
 
@@ -51,8 +52,20 @@ void Map::Update()
     {
         effect->StopEffect();
         effect->PlayEffect();
-        effect->SetRotation(VGet(0, 10, 0));
+
+        effect->SetRotation(rotationPosition);
+        effect->PositionUpdate(effectPosition);
     }
+    if (CheckHitKey(KEY_INPUT_Q))
+    {
+        rotationPosition.y += 0.1f;
+    }
+    if (CheckHitKey(KEY_INPUT_E))
+    {
+        rotationPosition.y -= 0.1f;
+    }
+
+    //effect->SetRotation(scalePosition);
 
     //時間を経過させる
     time++;
@@ -66,6 +79,6 @@ void Map::Draw()
     //3d描画
     MV1DrawModel(backGroundHandle);
     MV1DrawModel(fieldHandle);
- 
+    printfDx("rotation.y %f", rotationPosition.y);
 
 }
