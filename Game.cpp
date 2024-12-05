@@ -59,7 +59,6 @@ void Game::Update()
     //アップデート
     map->Update();
     input->Update();
-    camera->Update(player->GetPosition(), enemy->GetTopPosition());
     enemyManager->Update(*player, *enemy);
     enemy->Update();
     for (auto& objects : object)
@@ -71,9 +70,17 @@ void Game::Update()
 
     effect->PlayEffectUpdate();
 
-    if (player->GetHP() <= 0 || enemy->GetHP() <= 0)
+    if (enemy->GetHP() <= 0)
     {
-        ChangeScene("Result");
+        camera->EndUpdate(enemy->GetTopPosition());
+        if (camera->GetTime() >= 120)
+        {
+            ChangeScene("Result");
+        }
+    }
+    else
+    {
+        camera->Update(player->GetPosition(), enemy->GetTopPosition());
     }
 }
 

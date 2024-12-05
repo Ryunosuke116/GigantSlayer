@@ -97,7 +97,7 @@ void Player::Update(Calculation& calculation,
     UpdateAngle();
 
     //攻撃をされたときは動かせない
-    if (!(motionNum == down || motionNum == standUp))
+    if (!(motionNum == down || motionNum == standUp || motionNum == pickUp))
     {
         //移動
         Move(input, moveVec);
@@ -594,7 +594,6 @@ void Player::ChangeMotion(int motionNum)
 /// </summary>
 void Player::MotionUpdate()
 {
-   
     //downモーション時
     if (motionNum == down)
     {
@@ -607,12 +606,23 @@ void Player::MotionUpdate()
             ChangeMotion(standUp);
         }
     }
+    //pickUpモーション時
+    else if (motionNum == pickUp)
+    {
+        playTime += 1.4f;
+        if (playTime >= 53.0f)
+        {
+            ChangeMotion(stand);
+            isChangeMotion = false;
+        }
+    }
     else
     {
         //モーションを1fずつ動かす
         playTime += 0.8f;
     }
 
+    
     //止まるモーションの時モーション終了した場合待機モーションに変更
     if (motionNum == stop || motionNum == standUp)
     {

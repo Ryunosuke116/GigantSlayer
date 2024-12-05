@@ -19,7 +19,7 @@ Camera::Camera()
 	x = 0;
 	y = 20;
 	z = -40;
-
+	time = 0;
 
 }
 
@@ -49,6 +49,7 @@ void Camera::Update(const VECTOR& playerPosition,const VECTOR& enemyPosition)
 {
 	//ラープを使ってカメラを移動
 	Leap(playerPosition,enemyPosition);
+
 	if (CheckHitKey(KEY_INPUT_2))
 	{
 		AimPosition.y = 90;
@@ -57,8 +58,42 @@ void Camera::Update(const VECTOR& playerPosition,const VECTOR& enemyPosition)
 	{
 		y = 20;
 	}
+	/*if (CheckHitKey(KEY_INPUT_Q))
+	{
+		AimPosition.x++;
+	}
+	if (CheckHitKey(KEY_INPUT_E))
+	{
+		AimPosition.x--;
+	}
+	if (CheckHitKey(KEY_INPUT_UP))
+	{
+		AimPosition.z++;
+	}
+	if (CheckHitKey(KEY_INPUT_DOWN))
+	{
+		AimPosition.z--;
+	}*/
+	//LookPosition = VGet(enemyPosition.x, enemyPosition.y, enemyPosition.z);
 
 	SetCameraPositionAndTarget_UpVecY(AimPosition,LookPosition);
+
+}
+
+void Camera::EndUpdate(const VECTOR& enemyPosition)
+{
+	LookPosition = VGet(enemyPosition.x, enemyPosition.y, enemyPosition.z);
+
+	if (time <= 200)
+	{
+		AimPosition = VGet(36, 40, 16);
+	}
+	if (time > 200 && time <= 400)
+	{
+		AimPosition = VGet(-29, 40, 7);
+	}
+	time++;
+	SetCameraPositionAndTarget_UpVecY(AimPosition, LookPosition);
 
 }
 
@@ -77,12 +112,19 @@ void Camera::TitleUpdate()
 	SetCameraPositionAndTarget_UpVecY(AimPosition, LookPosition);
 }
 
+
+
 /// <summary>
 /// 描画
 /// </summary>
 void Camera::Draw()
 {
-	printfDx("AimPosition.z %f", AimPosition.z);
+	printfDx("AimPosition.x %f\n", AimPosition.x);
+	printfDx("AimPosition.y %f\n", AimPosition.y);
+	printfDx("AimPosition.z %f\n", AimPosition.z);
+	printfDx("LookPosition.x %f\n", LookPosition.x);
+	printfDx("LookPosition.y %f\n", LookPosition.y);
+	printfDx("LookPosition.z %f\n", LookPosition.z);
 }
 
 /// <summary>
