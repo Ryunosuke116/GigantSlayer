@@ -84,11 +84,11 @@ void Camera::EndUpdate(const VECTOR& enemyPosition)
 {
 	LookPosition = VGet(enemyPosition.x, enemyPosition.y, enemyPosition.z);
 
-	if (time <= 200)
+	if (time <= 120)
 	{
 		AimPosition = VGet(36, 40, 16);
 	}
-	if (time > 200 && time <= 400)
+	if (time > 120 && time <= 240)
 	{
 		AimPosition = VGet(-29, 40, 7);
 	}

@@ -15,6 +15,7 @@
 #include "Calculation.h"
 #include "ObjectManager.h"
 #include "EnemyManager.h"
+#include"Common.h"
 #include <iostream>
 #include <array>
 
@@ -30,6 +31,7 @@ public:
     void Draw();
 private:
     static constexpr int objectNumber = 4;      //オブジェクトの数
+    int alpha;
     //定義
     Input* input = NULL;
     Effect* effect = NULL;
@@ -45,5 +47,6 @@ private:
        NULL
     };
     Enemy* enemy = NULL;
+    Common* common = NULL;
 };
 

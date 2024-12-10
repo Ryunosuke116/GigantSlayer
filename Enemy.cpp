@@ -45,7 +45,6 @@ void Enemy::Initialize()
     HP = 3;
     bottomPosition = VGet(0, -30, 60);
     bulletPosition = VGet(bottomPosition.x, bottomPosition.y + 20, bottomPosition.z);
-    radius = 18;
     addPlayTime = 0.4f;
     //ƒ‚ƒfƒ‹“Ç‚Ýž‚Ý
     modelHandle = MV1LoadModel("material/mv1/mutant_1031.mv1");
@@ -77,6 +76,11 @@ void Enemy::Update()
     if (CheckHitKey(KEY_INPUT_1))
     {
         breath->isAttack = true;
+    }
+    if (CheckHitKey(KEY_INPUT_2))
+    {
+        HP = 0;
+        ChangeMotion(knockback);
     }
 
     //UŒ‚‚ÌXV
@@ -231,17 +235,24 @@ void Enemy::MotionUpdate()
     //‚Ì‚¯‚¼‚è
     else if (motionNum == knockback)
     {
-        playTime += addPlayTime;
+        if (HP > 0)
+        {
+            playTime += addPlayTime;
 
-        //ˆê’è”‚ð’´‚¦‚é‚Æ‹tÄ¶
-        if (playTime >= 20.0f)
-        {
-            addPlayTime *= -1.0f;
+            //ˆê’è”‚ð’´‚¦‚é‚Æ‹tÄ¶
+            if (playTime >= 20.0f)
+            {
+                addPlayTime *= -1.0f;
+            }
+            else if (playTime <= 0)
+            {
+                ChangeMotion(stand);
+                addPlayTime *= -1.0f;
+            }
         }
-        else if (playTime <= 0)
+        else
         {
-            ChangeMotion(stand);
-            addPlayTime *= -1.0f;
+            playTime += 0.1f;
         }
     }
 

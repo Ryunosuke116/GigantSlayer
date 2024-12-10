@@ -1,0 +1,20 @@
+#pragma once
+#include "DxLib.h"
+#include"Map.h"
+#include "Player.h"
+#include "Enemy.h"
+
+class Common
+{
+private:
+	static constexpr float	ShadowSize = 3.0f;		// ‰e‚Ì‘å‚«‚³
+	static constexpr float	ShadowHeight = 90.0f;	// ‰e‚ª—‚¿‚é‚‚³
+	int shadowHandle;
+public:
+
+	Common();
+	void Draw(Map& map, const VECTOR& PlayerPosition, const Enemy& enemy);
+
+	void DrawShadow(const Map& map, const VECTOR& position);
+};
+

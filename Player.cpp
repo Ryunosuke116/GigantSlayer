@@ -1,5 +1,6 @@
 #include "Input.h"
 #include "Player.h" 
+#include"Map.h"
 #include <iostream>
 #include <array>
 
@@ -39,6 +40,7 @@ Player::Player()
     motionNumber = 0;
     //モデルの読み込み
     modelHandle = MV1LoadModel("material/mv1/maria_1204.mv1");
+    shadowHandle = LoadGraph("material/Shadow.tga");
 
     MV1SetScale(modelHandle, VGet(0.04f, 0.04f, 0.04f));
     //エフェクトのインスタンス化、初期化
@@ -208,9 +210,9 @@ void Player::Update(Calculation& calculation,
 /// <summary>
 ///  描画
 /// </summary>
-void Player::Draw()
+void Player::Draw(const Map& map)
 {
-    
+
     //DrawSphere3D(topSpherePosition, radius, 16, GetColor(0, 0, 0), GetColor(255, 255, 255), false);
     if (!isHitObject)
     {
@@ -241,7 +243,7 @@ void Player::Draw()
 
 
     MV1DrawModel(modelHandle);
-
+    //DrawShadow(map,position);
 }
 
 /// <summary>
@@ -413,7 +415,7 @@ void Player::Attack(const Input& input)
             //速度
             keepTargetMoveDirection = VScale(keepTargetMoveDirection, AttackSpeed);
             //プレイヤーの位置から撃つように
-            objectPosition = VGet(position.x, position.y, position.z);
+            objectPosition = VGet(topSpherePosition.x, topSpherePosition.y, topSpherePosition.z);
 
             attackSpeedY = JumpPower;
             isPushKey = true;
@@ -435,7 +437,7 @@ void Player::Attack(const Input& input)
     }
     else
     {
-        objectPosition = VGet(position.x, position.y, position.z);
+        objectPosition = VGet(topSpherePosition.x, topSpherePosition.y + 5.0f, topSpherePosition.z);
     }
 
     if (isObjectHitEnemy)
@@ -616,11 +618,22 @@ void Player::MotionUpdate()
             isChangeMotion = false;
         }
     }
+    //待機モーション
+    else if (motionNum == stand)
+    {
+        playTime += 0.6f;
+        if (playTime >= 64.0f)
+        {
+            playTime = 0;
+        }
+    }
     else
     {
         //モーションを1fずつ動かす
-        playTime += 0.8f;
+        playTime += 0.6f;
     }
+
+   
 
     
     //止まるモーションの時モーション終了した場合待機モーションに変更
@@ -650,4 +663,69 @@ void Player::MotionUpdate()
 void Player::GetPosition(VECTOR& setPosition)
 {
     setPosition = VGet(position.x, position.y, position.z);
+}
+
+/// <summary>
+/// プレイヤーの影を描画
+/// </summary>
+void Player::DrawShadow(const Map& map,VECTOR& position)
+{
+
+    // テクスチャアドレスモードを CLAMP にする( テクスチャの端より先は端のドットが延々続く )
+    SetTextureAddressMode(DX_TEXADDRESS_CLAMP);
+
+    // プレイヤーの直下に存在する地面のポリゴンを取得
+    auto hitResultDim = MV1CollCheck_Capsule(map.GetModelHandle(), -1, position, VAdd(position, VGet(0.0f, -ShadowHeight, 0.0f)), ShadowSize);
+
+    // 頂点データで変化が無い部分をセット
+    VERTEX3D vertex[3];
+    vertex[0].dif = GetColorU8(255, 255, 255, 255);
+    vertex[0].spc = GetColorU8(0, 0, 0, 0);
+    vertex[0].su = 0.0f;
+    vertex[0].sv = 0.0f;
+    vertex[1] = vertex[0];
+    vertex[2] = vertex[0];
+
+    // 球の直下に存在するポリゴンの数だけ繰り返し
+    auto hitResult = hitResultDim.Dim;
+    for (int i = 0; i < hitResultDim.HitNum; i++, hitResult++)
+    {
+        // ポリゴンの座標は地面ポリゴンの座標
+        vertex[0].pos = hitResult->Position[0];
+        vertex[1].pos = hitResult->Position[1];
+        vertex[2].pos = hitResult->Position[2];
+
+        // ちょっと持ち上げて重ならないようにする
+        auto slideVec = VScale(hitResult->Normal, 0.5f);
+        vertex[0].pos = VAdd(vertex[0].pos, slideVec);
+        vertex[1].pos = VAdd(vertex[1].pos, slideVec);
+        vertex[2].pos = VAdd(vertex[2].pos, slideVec);
+
+        // ポリゴンの不透明度を設定する
+        vertex[0].dif.a = 0;
+        vertex[1].dif.a = 0;
+        vertex[2].dif.a = 0;
+        if (hitResult->Position[0].y > position.y - ShadowHeight)
+            vertex[0].dif.a = static_cast<BYTE>(128 * (1.0f - static_cast<float>(fabs(hitResult->Position[0].y - position.y) / ShadowHeight)));
+
+        if (hitResult->Position[1].y > position.y - ShadowHeight)
+            vertex[1].dif.a = static_cast<BYTE>(128 * (1.0f - static_cast<float>(fabs(hitResult->Position[1].y - position.y) / ShadowHeight)));
+
+        if (hitResult->Position[2].y > position.y - ShadowHeight)
+            vertex[2].dif.a = static_cast<BYTE>(128 * (1.0f - static_cast<float>(fabs(hitResult->Position[2].y - position.y) / ShadowHeight)));
+
+        // ＵＶ値は地面ポリゴンとプレイヤーの相対座標から割り出す
+        vertex[0].u = (hitResult->Position[0].x - position.x) / (ShadowSize * 2.0f) + 0.5f;
+        vertex[0].v = (hitResult->Position[0].z - position.z) / (ShadowSize * 2.0f) + 0.5f;
+        vertex[1].u = (hitResult->Position[1].x - position.x) / (ShadowSize * 2.0f) + 0.5f;
+        vertex[1].v = (hitResult->Position[1].z - position.z) / (ShadowSize * 2.0f) + 0.5f;
+        vertex[2].u = (hitResult->Position[2].x - position.x) / (ShadowSize * 2.0f) + 0.5f;
+        vertex[2].v = (hitResult->Position[2].z - position.z) / (ShadowSize * 2.0f) + 0.5f;
+
+        DrawPolygon3D(vertex, 1, shadowHandle, TRUE);
+    }
+
+    // 検出した地面ポリゴン情報の後始末
+    MV1CollResultPolyDimTerminate(hitResultDim);
+
 }

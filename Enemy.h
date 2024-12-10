@@ -15,7 +15,7 @@ public:
     void Draw();
     VECTOR GetBulletPosition() { return bulletPosition; }
     VECTOR GetTopPosition() { return topPosition; }
-    VECTOR GetBottomPosition() { return bottomPosition; }
+    VECTOR GetBottomPosition() const { return bottomPosition; }
     
     void SetIsPlayerAttackHit(const bool value) { isPlayerAttackHit = value; }
     void ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
@@ -76,7 +76,6 @@ private:
     VECTOR playerPos;                   //プレイヤーのポジション
     VECTOR futurePosition;              //未来のポジション
     float bulletPositionStack;          
-    float radius;                       //球の半径
     float playerMoveSpeed;              //プレイヤーの速度
     float bulletSpeed_Y;                //弾の縦に動く速度
 
@@ -86,5 +85,6 @@ private:
     static constexpr int breathAttack = 6;      //ブレス
     static constexpr int bulletAttack = 7;      //弾攻撃
     static constexpr int stand = 16;             //待機
+    static constexpr float radius = 20;   //球の半径
 };
 

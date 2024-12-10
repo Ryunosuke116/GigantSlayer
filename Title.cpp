@@ -53,5 +53,6 @@ void Title::Draw()
 {
     MV1DrawModel(backGroundHandle);
     DrawGraph(100, 100, titleHandle, true);
+    
     printfDx("SPACE START");
 }

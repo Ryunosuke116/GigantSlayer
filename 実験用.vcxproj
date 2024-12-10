@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="BaseScene.cpp" />
+    <ClCompile Include="Common.cpp" />
     <ClCompile Include="EnemyCalculation.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
     <ClCompile Include="Calculation.cpp" />
@@ -44,6 +45,7 @@
   <ItemGroup>
     <ClInclude Include="BackGround.h" />
     <ClInclude Include="BaseScene.h" />
+    <ClInclude Include="Common.h" />
     <ClInclude Include="EnemyCalculation.h" />
     <ClInclude Include="EnemyManager.h" />
     <ClInclude Include="Calculation.h" />

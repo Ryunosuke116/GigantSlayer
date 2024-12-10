@@ -23,5 +23,6 @@ public:
     void Initialize();
     void Update();
     void Draw();
+    int GetModelHandle() const { return fieldHandle; }
 };
 

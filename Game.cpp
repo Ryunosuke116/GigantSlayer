@@ -22,6 +22,7 @@ Game::Game(SceneManager& manager) : BaseScene{ manager }
             objects = new Object();
         }
         enemy = new Enemy();
+        common = new Common();
     }
 }
 
@@ -48,7 +49,7 @@ void Game::Initialize()
     {
         (*objects).Initialize(*enemy);
     }
-    
+    alpha = 0;
 }
 
 /// <summary>
@@ -73,9 +74,13 @@ void Game::Update()
     if (enemy->GetHP() <= 0)
     {
         camera->EndUpdate(enemy->GetTopPosition());
-        if (camera->GetTime() >= 120)
+        if (camera->GetTime() >= 240)
         {
-            ChangeScene("Result");
+            alpha += 2;
+            if (alpha >= 350)
+            {
+                 ChangeScene("Result");
+            }
         }
     }
     else
@@ -97,7 +102,11 @@ void Game::Draw()
         object[i]->Draw();
     }
     enemy->Draw();
-    player->Draw();
+    player->Draw(*map);
     camera->Draw();
     effect->Draw();
+    common->Draw(*map,player->GetPosition(),*enemy);
+    SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+    DrawBox(0, 0, 1600, 900, GetColor(255, 255, 255), TRUE); //” ‚Ì•`‰æ
+    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }

@@ -6,13 +6,14 @@
 #include "Object.h"
 #include "Input.h"
 #include "Effect.h"
+#include"Map.h"
 
 
 class Player
 {
 private:
     static constexpr float  radius      = 2;        //半径    
-    static constexpr float  AttackSpeed = 0.55f;     //弾の速度
+    static constexpr float  AttackSpeed = 0.65f;     //弾の速度
     static constexpr float	MoveSpeed   = 0.5f;	    // 移動速度
     static constexpr float  slowMoveSpeed = 0.3f;   //移動速度
     static constexpr float	JumpPower   = 1.5f;	    // ジャンプ力
@@ -20,6 +21,8 @@ private:
     static constexpr float  AttackGravity = 0.15f;  //攻撃の重力
     static constexpr float	AngleSpeed  = 0.4f;	    // 角度変化速度
     static constexpr float  maxRange    = 33.0f;    //最大範囲
+    static constexpr float	ShadowSize = 3.0f;	// 影の大きさ
+    static constexpr float	ShadowHeight = 10.0f;	// 影が落ちる高さ
     static constexpr int objectNumber = 4;      //オブジェクトの数
 
     static constexpr int    down = 0;           //ダウンする
@@ -44,6 +47,7 @@ private:
     Effect* effect;
     Effect* attackEffect;
 
+    int shadowHandle;
     int effectResourceHandle;
     int modelHandle;
     int attachIndex;            //再生中のモーション番号
@@ -83,7 +87,7 @@ public:
     void Update(Calculation& calculation,                   //更新
         std::array<Object*, 4> object,
         const Input& input, Enemy& enemy);
-    void Draw();
+    void Draw(const Map& map);
     void ChangeMotion(int motionNum);
     void UpdateAngle();
     void Attack(const Input& input);
@@ -97,10 +101,11 @@ public:
     void Down();
     void MotionUpdate();
     void PickUpObject(Object& object, const Input& input);
+    void DrawShadow(const Map& map, VECTOR& position);
   
     float GetMoveSpeed() { return MoveSpeed; }
     bool GetIsMove() { return isMove; }
-    VECTOR GetPosition() { return position; }
+    VECTOR GetPosition() const { return position; }
     int GetHP() { return HP; }
 
 };
