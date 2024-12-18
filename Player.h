@@ -25,13 +25,19 @@ private:
     static constexpr float	ShadowHeight = 10.0f;	// 影が落ちる高さ
     static constexpr int objectNumber = 4;      //オブジェクトの数
 
-    static constexpr int    down = 0;           //ダウンする
-    static constexpr int    standUp = 1;        //立ち上がる
-    static constexpr int    jump = 13;           //ジャンプ
-    static constexpr int    stop = 10;           //止まる
-    static constexpr int    stand = 2;          //待機
-    static constexpr int    run = 7;           //歩く
-    static constexpr int    pickUp = 4;         //拾う
+    static constexpr int    down = 6;           //ダウンする
+    static constexpr int    standUp = 15;        //立ち上がる
+    static constexpr int    stand = 13;          //待機
+    static constexpr int    run = 11;           //歩く
+    static constexpr int    jump = 7;           //ジャンプ
+    static constexpr int    stop = 16;           //止まる
+    static constexpr int    pickUp = 9;         //拾う
+
+    static constexpr int    stand_Hold = 14;
+    static constexpr int    run_Hold = 12;
+    static constexpr int    jump_Hold = 8;
+    static constexpr int    stop_Hold = 17;
+    static constexpr int    pickUp_Hold = 10;
 
     VECTOR position;
     VECTOR targetMoveDirection;	// モデルが向くべき方向のベクトル
@@ -64,6 +70,7 @@ private:
     float playTime;             //現在の再生時間
     float angle;					// モデルが向いている方向の角度
     float attackSpeedY;         //攻撃重力
+    float invincibleTime;       //無敵時間
 
     bool isMove;                    //動いたか
     bool isHitEnemyAttack;          //Enemyの攻撃に当たっているか
@@ -75,7 +82,9 @@ private:
     bool isObjectHitEnemy;          //攻撃がenemyに当たったか
     bool isChangeMotion;            //モーション変更するか
     bool isPlayTime;
-    
+    bool isAttackHold;              //攻撃を保持しているか
+    bool isInvincible;              //無敵か
+    bool isDisplay;                 //表示するか
 
 
 public:
@@ -88,7 +97,6 @@ public:
         std::array<Object*, 4> object,
         const Input& input, Enemy& enemy);
     void Draw(const Map& map);
-    void ChangeMotion(int motionNum);
     void UpdateAngle();
     void Attack(const Input& input);
     void AttackHitCheck(Enemy& enemy, Calculation& calculation);
@@ -99,13 +107,18 @@ public:
     bool ObjectHitCheck(const VECTOR objectPosition,
         const float radius, Calculation& calculation);
     void Down();
-    void MotionUpdate();
     void PickUpObject(Object& object, const Input& input);
-    void DrawShadow(const Map& map, VECTOR& position);
-  
+    ///////////////////////////////////////////////
+    //モーション関連
+    ///////////////////////////////////////////////
+    void MotionUpdate();
+    void ChangeMotion(int motionNum);
+    void Motion_HoldorUnHold(int motionNum,int holdMotionNum);
+
     float GetMoveSpeed() { return MoveSpeed; }
     bool GetIsMove() { return isMove; }
     VECTOR GetPosition() const { return position; }
+    void SetPosition(VECTOR newPosition) { position = newPosition; }
     int GetHP() { return HP; }
 
 };

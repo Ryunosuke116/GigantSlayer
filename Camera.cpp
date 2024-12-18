@@ -12,15 +12,16 @@ Camera::Camera()
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	//奥行0.1～1000までをカメラの描画範囲とする
-	SetCameraNearFar(0.1f, 10000.0f);
+	SetCameraNearFar(3.5f, 5000.0f);
 
 	AimPosition = VGet(0, 20, -40);
 	LookPosition = VGet(0, 0, 0);
 	x = 0;
-	y = 20;
-	z = -40;
+	y = 5;
+	z = 0;
+	addY = 1.0f;
 	time = 0;
-
+	isChangeUpdate = false;
 }
 
 /// <summary>
@@ -40,6 +41,9 @@ void Camera::Initialize()
 
 	// DXライブラリのカメラとEffekseerのカメラを同期する。
 	Effekseer_Sync3DSetting();
+
+	isChangeUpdate = false;
+
 }
 
 /// <summary>
@@ -80,6 +84,49 @@ void Camera::Update(const VECTOR& playerPosition,const VECTOR& enemyPosition)
 
 }
 
+void Camera::StartUpdate()
+{
+	time++;
+
+	if (time <= 100)
+	{
+		ChangeLightTypeDir(VGet(0, -1, 0));
+		AimPosition = VGet(2, 4, 5);
+		LookPosition = VGet(0, 5, 0);
+	}
+	else if (time <= 230)
+	{
+		if (time == 120)
+		{
+			ChangeLightTypeDir(VGet(0.577350f, -0.577350f, 0.577350f));
+		}
+
+		y -= addY;
+		addY -= 0.15;
+		z += 1.2f;
+		if (y >= 20)
+		{
+			y = 20;
+		}
+		if (z >= 50)
+		{
+			z = 50;
+		}
+		LookPosition = VGet(0, y, z);
+	}
+	else
+	{
+		time = 0;
+		isChangeUpdate = true;
+	}
+
+	SetCameraPositionAndTarget_UpVecY(AimPosition, LookPosition);
+}
+
+/// <summary>
+/// ゲームクリア時のカメラ
+/// </summary>
+/// <param name="enemyPosition"></param>
 void Camera::EndUpdate(const VECTOR& enemyPosition)
 {
 	LookPosition = VGet(enemyPosition.x, enemyPosition.y, enemyPosition.z);
@@ -97,6 +144,10 @@ void Camera::EndUpdate(const VECTOR& enemyPosition)
 
 }
 
+
+/// <summary>
+/// タイトルカメラ
+/// </summary>
 void Camera::TitleUpdate()
 {
 

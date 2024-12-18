@@ -36,6 +36,7 @@ public:
     void WhichOffObject(const bool& isEmerge);
 
     VECTOR GetPosition() { return position; }
+    void SetPosition(VECTOR newPosition) { position = newPosition; }
     float GetRadius() { return radius; }
     //“n‚·
     bool GetIsObject() { return isObject; }

@@ -42,7 +42,7 @@ Enemy::~Enemy()
 /// </summary>
 void Enemy::Initialize()
 {
-    HP = 3;
+    HP = 100;
     bottomPosition = VGet(0, -30, 60);
     bulletPosition = VGet(bottomPosition.x, bottomPosition.y + 20, bottomPosition.z);
     addPlayTime = 0.4f;
@@ -335,7 +335,7 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
     //‚Ì‚¯‚¼‚è
     if (isPlayerAttackHit)
     {
-        HP--;
+        HP -= 10;
         bullet.ResetAttack(bottomPosition);
         ChangeMotion(knockback);
         playTime = 19.0f;

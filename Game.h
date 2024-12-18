@@ -16,6 +16,7 @@
 #include "ObjectManager.h"
 #include "EnemyManager.h"
 #include"Common.h"
+#include"GameUI.h"
 #include <iostream>
 #include <array>
 
@@ -48,5 +49,6 @@ private:
     };
     Enemy* enemy = NULL;
     Common* common = NULL;
+    GameUI* gameUI = NULL;
 };
 

@@ -1,5 +1,7 @@
 #pragma once
 #include "Effect.h"
+#include <iostream>
+#include <vector>
 
 class EnemyCircleAttack
 {

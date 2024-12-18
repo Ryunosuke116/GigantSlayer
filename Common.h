@@ -2,6 +2,7 @@
 #include "DxLib.h"
 #include"Map.h"
 #include "Player.h"
+#include "Object.h"
 #include "Enemy.h"
 
 class Common
@@ -13,6 +14,9 @@ private:
 public:
 
 	Common();
+	~Common();
+	void Update(Player& player, std::array<Object*, 4> objects);
+	void MovableCalculation(VECTOR& position);
 	void Draw(Map& map, const VECTOR& PlayerPosition, const Enemy& enemy);
 
 	void DrawShadow(const Map& map, const VECTOR& position);

@@ -23,6 +23,7 @@ Player::Player()
     angle = 0;
     stock = 0;
     HP = 0;
+    invincibleTime = 0;
 
     attackEffectTime = 0;
     isHitEnemyAttack = false;
@@ -35,11 +36,14 @@ Player::Player()
     isPlayTime = false;
     isHitObject[4] = {false};
     isObjectHitEnemy = false;
+    isAttackHold = false;
+    isDisplay = false;
     currentJumpPower = 0;
     playingEffectHandle = -1;
     motionNumber = 0;
+
     //モデルの読み込み
-    modelHandle = MV1LoadModel("material/mv1/maria_1204.mv1");
+    modelHandle = MV1LoadModel("material/mv1/maria_1212.mv1");
     shadowHandle = LoadGraph("material/Shadow.tga");
 
     MV1SetScale(modelHandle, VGet(0.04f, 0.04f, 0.04f));
@@ -62,6 +66,7 @@ Player::~Player()
 void Player::Initialize()
 {
     HP = 3;
+    invincibleTime = 0;
     position = VGet(0, 0, 0);
     targetMoveDirection = VGet(0, 0, 0);
     objectPosition = VGet(0, 5, 0);
@@ -70,7 +75,8 @@ void Player::Initialize()
     topSpherePosition = VGet(0, 0, 0);
     bottomSpherePosition = VGet(0, 0, 0);
     testPosition = VGet(0, 0, 0);
-
+    isAttackHold = false;
+    isDisplay = true;
 
     //待機モーション読み込み
     ChangeMotion(stand);
@@ -99,7 +105,7 @@ void Player::Update(Calculation& calculation,
     UpdateAngle();
 
     //攻撃をされたときは動かせない
-    if (!(motionNum == down || motionNum == standUp || motionNum == pickUp))
+    if (!(motionNum == down || motionNum == standUp || motionNum == pickUp || motionNum == pickUp_Hold))
     {
         //移動
         Move(input, moveVec);
@@ -119,8 +125,7 @@ void Player::Update(Calculation& calculation,
             if (!isChangeMotion && !isJump)
             {
                 //走るモーションに変更
-                ChangeMotion(run);
-                isChangeMotion = true;
+                Motion_HoldorUnHold(run, run_Hold);
             }
 
         }
@@ -130,8 +135,7 @@ void Player::Update(Calculation& calculation,
             if (isChangeMotion)
             {
                 //待機モーションに変更
-                ChangeMotion(stop);
-                isChangeMotion = false;
+                Motion_HoldorUnHold(stop, stop_Hold);
             }
         }
 
@@ -150,9 +154,11 @@ void Player::Update(Calculation& calculation,
             number++;
         }
 
-
-        //敵の攻撃の当たり判定
-        EnemyHitCheck(enemy, calculation);
+        if (!isInvincible)
+        {
+            //敵の攻撃の当たり判定
+            EnemyHitCheck(enemy, calculation);
+        }
    
         Down();
     }
@@ -175,6 +181,27 @@ void Player::Update(Calculation& calculation,
     //攻撃
     Attack(input);
     AttackHitCheck(enemy, calculation);
+
+    //無敵時間
+    if (isInvincible)
+    {
+        invincibleTime++;
+        if (isDisplay)
+        {
+            isDisplay = false;
+        }
+        else
+        {
+            isDisplay = true;
+        }
+
+        if (invincibleTime >= 120.0f)
+        {
+            isInvincible = false;
+            isDisplay = true;
+            invincibleTime = 0;
+        }
+    }
     
 
     ///////////////////////////////////////
@@ -182,21 +209,6 @@ void Player::Update(Calculation& calculation,
     //////////////////////////////////////
 
     MotionUpdate();
-
-    //中心からプレイヤーの距離を測る
-    float r = VSize(VSub(position,VGet(0,0,0)) );
-
-    //一定の距離に達したらそれ以上いけないようにする
-    if (r >= maxRange || r <= -maxRange)
-    {
-        //中心座標からプレイヤー座標の距離
-        VECTOR distance = VSub(VGet(0, 0, 0), position);
-        //正規化
-        distance = VNorm(distance);
-        //戻す量を計算、加算する
-        VECTOR returnPosition = VScale(distance, (r - maxRange));
-        position = VAdd(position, returnPosition);
-    }
 
     ////////////////////////
     //エフェクト
@@ -212,6 +224,11 @@ void Player::Update(Calculation& calculation,
 /// </summary>
 void Player::Draw(const Map& map)
 {
+
+    if (isDisplay)
+    {
+        MV1DrawModel(modelHandle);
+    }
 
     //DrawSphere3D(topSpherePosition, radius, 16, GetColor(0, 0, 0), GetColor(255, 255, 255), false);
     if (!isHitObject)
@@ -241,9 +258,6 @@ void Player::Draw(const Map& map)
     printfDx("z.%f\n", position.z);
     printfDx("stock.%d\n",stock);
 
-
-    MV1DrawModel(modelHandle);
-    //DrawShadow(map,position);
 }
 
 /// <summary>
@@ -338,7 +352,7 @@ void Player::Move(const Input& input, VECTOR& moveVec)
         // Ｙ軸方向の速度をセット
         currentJumpPower = JumpPower;
         isJump = true;
-        ChangeMotion(jump);
+        Motion_HoldorUnHold(jump, jump_Hold);
     }
 
 }
@@ -368,11 +382,11 @@ void Player::Jump(const Input& input, VECTOR& moveVec)
             //状況に応じてモーション切り替え
             if (isMove && !(motionNum == down || motionNum == standUp))
             {
-                ChangeMotion(run);
+                Motion_HoldorUnHold(run,run_Hold);
             }
             else if(!(motionNum == down || motionNum == standUp))
             {
-                ChangeMotion(stop);
+                Motion_HoldorUnHold(stop,stop_Hold);
             }
         }
     }
@@ -389,7 +403,8 @@ void Player::PickUpObject(Object& object, const Input& input)
     //オブジェクトとプレイヤーが当たった場合消す
     if (input.GetNowFrameInput() & PAD_INPUT_X || CheckHitKey(KEY_INPUT_5))
     {
-        ChangeMotion(pickUp);
+        isAttackHold = true;
+        ChangeMotion(pickUp_Hold);
         object.PlayerIsHit(true);
         //球に触れたときストックを増やす
         stock++;
@@ -420,6 +435,10 @@ void Player::Attack(const Input& input)
             attackSpeedY = JumpPower;
             isPushKey = true;
             stock--;
+            if (stock <= 0)
+            {
+                isAttackHold = false;
+            }
         }
     }
 
@@ -591,6 +610,28 @@ void Player::ChangeMotion(int motionNum)
     totalTime = MV1GetAttachAnimTotalTime(modelHandle, attachIndex);
 }
 
+void Player::Motion_HoldorUnHold(int motionNum, int holdMotionNum)
+{
+    if (!isAttackHold)
+    {
+        ChangeMotion(motionNum);
+    }
+    else if (isAttackHold)
+    {
+        ChangeMotion(holdMotionNum);
+    }
+
+    if (!isChangeMotion && !isJump)
+    {
+        isChangeMotion = true;
+    }
+    if (motionNum == stop)
+    {
+        isChangeMotion = false;
+    }
+
+}
+
 /// <summary>
 /// モーション更新
 /// </summary>
@@ -608,13 +649,17 @@ void Player::MotionUpdate()
             ChangeMotion(standUp);
         }
     }
+    else if (motionNum == standUp)
+    {
+        playTime += 1.2f;
+    }
     //pickUpモーション時
-    else if (motionNum == pickUp)
+    else if (motionNum == pickUp || motionNum == pickUp_Hold)
     {
         playTime += 1.4f;
         if (playTime >= 53.0f)
         {
-            ChangeMotion(stand);
+            Motion_HoldorUnHold(stand,stand_Hold);
             isChangeMotion = false;
         }
     }
@@ -627,23 +672,37 @@ void Player::MotionUpdate()
             playTime = 0;
         }
     }
+    else if (motionNum == stand_Hold)
+    {
+        playTime += 0.6f;
+        if (playTime >= 59.0f)
+        {
+            playTime = 0;
+        }
+    }
     else
     {
         //モーションを1fずつ動かす
         playTime += 0.6f;
     }
 
-   
-
     
     //止まるモーションの時モーション終了した場合待機モーションに変更
-    if (motionNum == stop || motionNum == standUp)
+    if (motionNum == stop || motionNum == stop_Hold 
+        || motionNum == standUp)
     {
         if (playTime >= totalTime)
         {
-            ChangeMotion(stand);
+            if (motionNum == standUp)
+            {
+                isInvincible = true;
+            }
+            Motion_HoldorUnHold(stand,stand_Hold);
             isChangeMotion = false;
+            isHitEnemyAttack = false;
+
         }
+
     }
 
     //playTimeがtotalTimeを超えたらリセットする
@@ -663,69 +722,4 @@ void Player::MotionUpdate()
 void Player::GetPosition(VECTOR& setPosition)
 {
     setPosition = VGet(position.x, position.y, position.z);
-}
-
-/// <summary>
-/// プレイヤーの影を描画
-/// </summary>
-void Player::DrawShadow(const Map& map,VECTOR& position)
-{
-
-    // テクスチャアドレスモードを CLAMP にする( テクスチャの端より先は端のドットが延々続く )
-    SetTextureAddressMode(DX_TEXADDRESS_CLAMP);
-
-    // プレイヤーの直下に存在する地面のポリゴンを取得
-    auto hitResultDim = MV1CollCheck_Capsule(map.GetModelHandle(), -1, position, VAdd(position, VGet(0.0f, -ShadowHeight, 0.0f)), ShadowSize);
-
-    // 頂点データで変化が無い部分をセット
-    VERTEX3D vertex[3];
-    vertex[0].dif = GetColorU8(255, 255, 255, 255);
-    vertex[0].spc = GetColorU8(0, 0, 0, 0);
-    vertex[0].su = 0.0f;
-    vertex[0].sv = 0.0f;
-    vertex[1] = vertex[0];
-    vertex[2] = vertex[0];
-
-    // 球の直下に存在するポリゴンの数だけ繰り返し
-    auto hitResult = hitResultDim.Dim;
-    for (int i = 0; i < hitResultDim.HitNum; i++, hitResult++)
-    {
-        // ポリゴンの座標は地面ポリゴンの座標
-        vertex[0].pos = hitResult->Position[0];
-        vertex[1].pos = hitResult->Position[1];
-        vertex[2].pos = hitResult->Position[2];
-
-        // ちょっと持ち上げて重ならないようにする
-        auto slideVec = VScale(hitResult->Normal, 0.5f);
-        vertex[0].pos = VAdd(vertex[0].pos, slideVec);
-        vertex[1].pos = VAdd(vertex[1].pos, slideVec);
-        vertex[2].pos = VAdd(vertex[2].pos, slideVec);
-
-        // ポリゴンの不透明度を設定する
-        vertex[0].dif.a = 0;
-        vertex[1].dif.a = 0;
-        vertex[2].dif.a = 0;
-        if (hitResult->Position[0].y > position.y - ShadowHeight)
-            vertex[0].dif.a = static_cast<BYTE>(128 * (1.0f - static_cast<float>(fabs(hitResult->Position[0].y - position.y) / ShadowHeight)));
-
-        if (hitResult->Position[1].y > position.y - ShadowHeight)
-            vertex[1].dif.a = static_cast<BYTE>(128 * (1.0f - static_cast<float>(fabs(hitResult->Position[1].y - position.y) / ShadowHeight)));
-
-        if (hitResult->Position[2].y > position.y - ShadowHeight)
-            vertex[2].dif.a = static_cast<BYTE>(128 * (1.0f - static_cast<float>(fabs(hitResult->Position[2].y - position.y) / ShadowHeight)));
-
-        // ＵＶ値は地面ポリゴンとプレイヤーの相対座標から割り出す
-        vertex[0].u = (hitResult->Position[0].x - position.x) / (ShadowSize * 2.0f) + 0.5f;
-        vertex[0].v = (hitResult->Position[0].z - position.z) / (ShadowSize * 2.0f) + 0.5f;
-        vertex[1].u = (hitResult->Position[1].x - position.x) / (ShadowSize * 2.0f) + 0.5f;
-        vertex[1].v = (hitResult->Position[1].z - position.z) / (ShadowSize * 2.0f) + 0.5f;
-        vertex[2].u = (hitResult->Position[2].x - position.x) / (ShadowSize * 2.0f) + 0.5f;
-        vertex[2].v = (hitResult->Position[2].z - position.z) / (ShadowSize * 2.0f) + 0.5f;
-
-        DrawPolygon3D(vertex, 1, shadowHandle, TRUE);
-    }
-
-    // 検出した地面ポリゴン情報の後始末
-    MV1CollResultPolyDimTerminate(hitResultDim);
-
 }

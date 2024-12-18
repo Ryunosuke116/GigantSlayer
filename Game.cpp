@@ -23,6 +23,7 @@ Game::Game(SceneManager& manager) : BaseScene{ manager }
         }
         enemy = new Enemy();
         common = new Common();
+        gameUI = new GameUI();
     }
 }
 
@@ -44,6 +45,7 @@ void Game::Initialize()
     camera->Initialize();
     player->Initialize();
     enemy->Initialize();
+    gameUI->Initialize(*enemy);
 
     for (auto& objects : object)
     {
@@ -68,8 +70,9 @@ void Game::Update()
     }
     enemy->bullet->SetIsEmerge(false);
     player->Update(*calculation, object, *input, *enemy);
-
     effect->PlayEffectUpdate();
+    gameUI->Update(*enemy);
+    common->Update(*player, object);
 
     if (enemy->GetHP() <= 0)
     {
@@ -85,7 +88,14 @@ void Game::Update()
     }
     else
     {
-        camera->Update(player->GetPosition(), enemy->GetTopPosition());
+        if (!camera->GetIsChange())
+        {
+            camera->StartUpdate();
+        }
+        else
+        {
+            camera->Update(player->GetPosition(), enemy->GetTopPosition());
+        }
     }
 }
 
@@ -106,6 +116,7 @@ void Game::Draw()
     camera->Draw();
     effect->Draw();
     common->Draw(*map,player->GetPosition(),*enemy);
+    gameUI->Draw();
     SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
     DrawBox(0, 0, 1600, 900, GetColor(255, 255, 255), TRUE); //” ‚Ì•`‰æ
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);

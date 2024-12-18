@@ -5,6 +5,47 @@ Common::Common()
     shadowHandle = LoadGraph("material/Shadow.tga");
 }
 
+void Common::Update(Player& player, std::array<Object*, 4> objects)
+{
+    VECTOR playerPosition = player.GetPosition();
+    MovableCalculation(playerPosition);
+    player.SetPosition(playerPosition);
+
+    for (auto& object : objects)
+    {
+        VECTOR objectPosition = object->GetPosition();
+        MovableCalculation(objectPosition);
+        object->SetPosition(objectPosition);
+    }
+}
+
+/// <summary>
+/// 移動可能距離
+/// </summary>
+/// <param name="position"></param>
+void Common::MovableCalculation(VECTOR& position)
+{
+
+    float maxRange = 33.0f;
+
+    //中心からの距離を測る
+    float r = VSize(VSub(position, VGet(0, 0, 0)));
+
+    //一定の距離に達したらそれ以上いけないようにする
+    if (r >= maxRange || r <= -maxRange)
+    {
+        //中心座標からプレイヤー座標の距離
+        VECTOR distance = VSub(VGet(0, 0, 0), position);
+        //正規化
+        distance = VNorm(distance);
+        //戻す量を計算、加算する
+        VECTOR returnPosition = VScale(distance, (r - maxRange));
+        position = VAdd(position, returnPosition);
+    }
+}
+
+
+
 void Common::Draw(Map& map, const VECTOR& PlayerPosition, const Enemy& enemy)
 {
     DrawShadow(map, PlayerPosition);

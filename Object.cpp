@@ -68,7 +68,6 @@ void Object::Update(Enemy& enemy, Calculation& calculation, const Input& input)
 
     if (isObject)
     {
-        
 
         //オブジェクトとプレイヤーが当たった場合消す
         if (isHitPlayer && isCanCatch)
