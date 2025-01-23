@@ -15,7 +15,7 @@ GameUI::GameUI()
     gameOver_back = LoadGraph("material/lose_backGround.png");
     died_font = LoadGraph("material/died.png");
     start_font = LoadGraph("material/start_01.png");
-    X_button = LoadGraph("material/X_button_01.png");
+    X_button = LoadGraph("material/X_button.png");
     A_button = LoadGraph("material/A_button_01.png");
 }
 
@@ -91,7 +91,7 @@ void GameUI::PlayerHPUpdate(Player& player)
 
     if (oldHP_player > playerNowHP)
     {
-        float newDrawHP = (maxDrawHP_player * playerNowHP) / 3;
+        float newDrawHP = (maxDrawHP_player * playerNowHP) / 4;
 
 
         if (newDrawHP < drawHP_player)

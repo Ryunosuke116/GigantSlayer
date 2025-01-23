@@ -1,5 +1,5 @@
 #include "Game.h"
-#include "Result.h"
+#include "GameClear.h"
 #include "Title.h"
 #include "BaseScene.h"
 

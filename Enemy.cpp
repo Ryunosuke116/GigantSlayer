@@ -270,7 +270,6 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
         }
     }
 
-
     //íeçUåÇ
     if (motionNum == bulletAttack)
     {
@@ -290,7 +289,7 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
     //ÇÃÇØÇºÇË
     if (isPlayerAttackHit)
     {
-        HP -= 10;
+        HP -= 20;
         if (!bullet.GetIsAttack())
         {
             bullet.ResetAttack(bottomPosition);

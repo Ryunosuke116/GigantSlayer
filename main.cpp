@@ -3,7 +3,7 @@
 #include<vector>
 #include <iostream>
 #include "Game.h"
-#include "Result.h"
+#include "GameClear.h"
 #include "Title.h"
 #include "GameOver.h"
 #include "BaseScene.h"
@@ -60,9 +60,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     SceneManager* sceneManager = new SceneManager();
 
+    sceneManager->Add<GameClear>("GameClear");
     sceneManager->Add<Title>("Title");
     sceneManager->Add<Game>("Game");
-    sceneManager->Add<Result>("Result");
     sceneManager->Add<GameOver>("GameOver");
 
 

@@ -134,7 +134,7 @@ void Game::SceneChanger(Player& player, Enemy& enemy, Camera& camera, GameUI& ga
             alpha += 2;
             if (alpha >= 350)
             {
-                ChangeScene("Result");
+                ChangeScene("GameClear");
             }
         }
     }
@@ -145,7 +145,7 @@ void Game::SceneChanger(Player& player, Enemy& enemy, Camera& camera, GameUI& ga
 
     if (gameUI.GetAlpha_bright() >= 500)
     {
-        ChangeScene("Result");
+        ChangeScene("GameClear");
     }
 
 }

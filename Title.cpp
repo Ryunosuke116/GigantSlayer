@@ -17,7 +17,7 @@ Title::Title(SceneManager& manager) : BaseScene{ manager }
 
     titleHandle = 0;
 
-    start_font = LoadGraph("material/start_01.png");
+    start_font = LoadGraph("material/start_03.png");
 }
 
 /// <summary>

@@ -30,6 +30,8 @@ GameOver::~GameOver()
 void GameOver::Initialize()
 {
     select = 0;
+    alpha = 0;
+    addAlpha = 4.5f;
 }
 
 /// <summary>
@@ -37,15 +39,25 @@ void GameOver::Initialize()
 /// </summary>
 void GameOver::Update()
 {
+    if (alpha > 255 || alpha < 0)
+    {
+        addAlpha = -addAlpha;
+    }
+    alpha += addAlpha;
+
     input->Update();
 
-    if (input->GetNowFrameInput() & PAD_INPUT_UP)
+    if (input->GetNowFrameInput() & PAD_INPUT_UP && select != 0)
     {
         select--;
+        alpha = 0;
+        addAlpha = 4.5f;
     }
-    if (input->GetNowFrameInput() & PAD_INPUT_DOWN)
+    if (input->GetNowFrameInput() & PAD_INPUT_DOWN && select != 1)
     {
         select++;
+        alpha = 0;
+        addAlpha = 4.5f;
     }
 
     if (select < 0)
@@ -72,6 +84,21 @@ void GameOver::Update()
 /// </summary>
 void GameOver::Draw()
 {
-    DrawGraph(400, 500, continue_font, true);
-    DrawGraph(300, 600, titleBack_font, true);
+    if (select == 0)
+    {
+        SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+        DrawGraph(400, 500, continue_font, true);
+        SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+        DrawGraph(300, 600, titleBack_font, true);
+    }
+    else if (select == 1)
+    {
+        DrawGraph(400, 500, continue_font, true);
+
+        SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+        DrawGraph(300, 600, titleBack_font, true);
+        SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+    }
 }

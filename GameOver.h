@@ -19,6 +19,8 @@ private:
     int continue_font = NULL;
     int titleBack_font = NULL;
     int select;
+    float alpha;
+    float addAlpha;
     Input* input = NULL;
 };
 

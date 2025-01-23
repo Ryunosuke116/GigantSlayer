@@ -25,19 +25,20 @@ private:
     static constexpr float	ShadowHeight = 10.0f;	// 影が落ちる高さ
     static constexpr int objectNumber = 4;      //オブジェクトの数
 
-    static constexpr int    down = 6;           //ダウンする
-    static constexpr int    standUp = 15;        //立ち上がる
-    static constexpr int    stand = 13;          //待機
-    static constexpr int    run = 11;           //歩く
-    static constexpr int    jump = 7;           //ジャンプ
-    static constexpr int    stop = 16;           //止まる
-    static constexpr int    pickUp = 9;         //拾う
+    static constexpr int    die = 0;            //倒れる
+    static constexpr int    down = 7;           //ダウンする
+    static constexpr int    standUp = 16;        //立ち上がる
+    static constexpr int    stand = 14;          //待機
+    static constexpr int    run = 12;           //歩く
+    static constexpr int    jump = 8;           //ジャンプ
+    static constexpr int    stop = 17;           //止まる
+    static constexpr int    pickUp = 10;         //拾う
 
-    static constexpr int    stand_Hold = 14;
-    static constexpr int    run_Hold = 12;
-    static constexpr int    jump_Hold = 8;
-    static constexpr int    stop_Hold = 17;
-    static constexpr int    pickUp_Hold = 10;
+    static constexpr int    stand_Hold = 15;
+    static constexpr int    run_Hold = 13;
+    static constexpr int    jump_Hold = 9;
+    static constexpr int    stop_Hold = 18;
+    static constexpr int    pickUp_Hold = 11;
 
     VECTOR position;
     VECTOR targetMoveDirection;	// モデルが向くべき方向のベクトル

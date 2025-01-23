@@ -43,7 +43,7 @@ Player::Player()
     motionNumber = 0;
 
     //ÉÇÉfÉãÇÃì«Ç›çûÇ›
-    modelHandle = MV1LoadModel("material/mv1/maria_1212.mv1");
+    modelHandle = MV1LoadModel("material/mv1/maria_0123.mv1");
     shadowHandle = LoadGraph("material/Shadow.tga");
 
     MV1SetScale(modelHandle, VGet(0.04f, 0.04f, 0.04f));
@@ -65,7 +65,7 @@ Player::~Player()
 /// </summary>
 void Player::Initialize()
 {
-    HP = 3;
+    HP = 4;
     invincibleTime = 0;
     position = VGet(0, 0, -50);
     targetMoveDirection = VGet(0, 0, 0);

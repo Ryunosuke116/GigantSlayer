@@ -7,7 +7,7 @@
 #include "Input.h"
 #include "Player.h"
 #include "Game.h"
-#include "Result.h"
+#include "GameClear.h"
 #include "Title.h"
 #include "BaseScene.h"
 #include "SceneManager.h"

@@ -63,7 +63,7 @@
     <ClCompile Include="BaseScene.cpp">
       <Filter>ソース ファイル\scene</Filter>
     </ClCompile>
-    <ClCompile Include="Result.cpp">
+    <ClCompile Include="GameClear.cpp">
       <Filter>ソース ファイル\scene</Filter>
     </ClCompile>
     <ClCompile Include="Title.cpp">
@@ -146,7 +146,7 @@
     <ClInclude Include="Game.h">
       <Filter>ヘッダー ファイル\scene</Filter>
     </ClInclude>
-    <ClInclude Include="Result.h">
+    <ClInclude Include="GameClear.h">
       <Filter>ヘッダー ファイル\scene</Filter>
     </ClInclude>
     <ClInclude Include="Title.h">
