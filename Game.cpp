@@ -24,6 +24,8 @@ Game::Game(SceneManager& manager) : BaseScene{ manager }
         enemy = new Enemy();
         common = new Common();
         gameUI = new GameUI();
+        objectManager = new ObjectManager();
+        blackOut = new BlackOut();
     }
 }
 
@@ -45,7 +47,9 @@ void Game::Initialize()
     camera->Initialize();
     player->Initialize();
     enemy->Initialize();
-    gameUI->Initialize(*enemy);
+    gameUI->Initialize(*enemy,*player);
+    blackOut->Initialize();
+    blackOut->SetAlpha(255);
 
     for (auto& objects : object)
     {
@@ -63,40 +67,34 @@ void Game::Update()
     map->Update();
     input->Update();
     enemyManager->Update(*player, *enemy);
-    enemy->Update();
+
     for (auto& objects : object)
     {
         (*objects).Update(*enemy, *calculation, *input);
     }
-    enemy->bullet->SetIsEmerge(false);
-    player->Update(*calculation, object, *input, *enemy);
-    effect->PlayEffectUpdate();
-    gameUI->Update(*enemy);
-    common->Update(*player, object);
 
-    if (enemy->GetHP() <= 0)
+    enemy->bullet->SetIsEmerge(false);
+
+    if (!camera->GetIsChange())
     {
-        camera->EndUpdate(enemy->GetTopPosition());
-        if (camera->GetTime() >= 240)
-        {
-            alpha += 2;
-            if (alpha >= 350)
-            {
-                 ChangeScene("Result");
-            }
-        }
+        enemy->StartUpdate();
+        player->StartUpdate();
+        camera->StartUpdate(*enemy);
     }
     else
     {
-        if (!camera->GetIsChange())
-        {
-            camera->StartUpdate();
-        }
-        else
-        {
-            camera->Update(player->GetPosition(), enemy->GetTopPosition());
-        }
+        enemy->Update();
+        player->Update(*calculation, object, *input, *enemy);
+        camera->Update(player->GetPosition(), enemy->GetTopPosition());
     }
+
+    objectManager->Update(object, *player,*calculation);
+    gameUI->Update(*enemy,*player, camera->GetIsChange());
+    common->Update(*player, object);
+    effect->PlayEffectUpdate();
+
+    blackOut->LightChangeUpdate(4.5f);
+    SceneChanger(*player, *enemy, *camera, *gameUI);
 }
 
 /// <summary>
@@ -104,6 +102,7 @@ void Game::Update()
 /// </summary>
 void Game::Draw()
 {
+
     //•`‰æ
     clsDx();
     map->Draw();
@@ -117,7 +116,36 @@ void Game::Draw()
     effect->Draw();
     common->Draw(*map,player->GetPosition(),*enemy);
     gameUI->Draw();
+    blackOut->Draw();
     SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
     DrawBox(0, 0, 1600, 900, GetColor(255, 255, 255), TRUE); //” ‚Ì•`‰æ
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+    clsDx();
+
+}
+
+void Game::SceneChanger(Player& player, Enemy& enemy, Camera& camera, GameUI& gameUI)
+{
+    if (enemy.GetHP() <= 0)
+    {
+        camera.EndUpdate(enemy.GetTopPosition());
+        if (camera.GetTime() >= 240)
+        {
+            alpha += 2;
+            if (alpha >= 350)
+            {
+                ChangeScene("Result");
+            }
+        }
+    }
+    else
+    {
+      
+    }
+
+    if (gameUI.GetAlpha_bright() >= 500)
+    {
+        ChangeScene("Result");
+    }
+
 }

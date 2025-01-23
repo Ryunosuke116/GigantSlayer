@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="BackGround.cpp" />
     <ClCompile Include="BaseScene.cpp" />
+    <ClCompile Include="BlackOut.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="EnemyCalculation.cpp" />
     <ClCompile Include="EnemyManager.cpp" />
@@ -32,6 +33,7 @@
     <ClCompile Include="EnemyBullet.cpp" />
     <ClCompile Include="EnemyCircleAttack.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="GameUI.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="main.cpp" />
@@ -46,6 +48,7 @@
   <ItemGroup>
     <ClInclude Include="BackGround.h" />
     <ClInclude Include="BaseScene.h" />
+    <ClInclude Include="BlackOut.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="EnemyCalculation.h" />
     <ClInclude Include="EnemyManager.h" />
@@ -57,6 +60,7 @@
     <ClInclude Include="EnemyBullet.h" />
     <ClInclude Include="EnemyCircleAttack.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameOver.h" />
     <ClInclude Include="GameUI.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Map.h" />

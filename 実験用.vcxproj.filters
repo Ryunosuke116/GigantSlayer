@@ -34,6 +34,9 @@
     <Filter Include="ソース ファイル\GameScene\Enemy">
       <UniqueIdentifier>{e6ee0e8e-1981-45cb-bda0-db3d0571f4c1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\GameScene\Object">
+      <UniqueIdentifier>{9c7383b1-1544-458e-a340-663bc5cfb3c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Enemy.cpp">
@@ -75,9 +78,6 @@
     <ClCompile Include="Map.cpp">
       <Filter>ソース ファイル\GameScene</Filter>
     </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>ソース ファイル\GameScene</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -90,9 +90,6 @@
     <ClCompile Include="BackGround.cpp">
       <Filter>ソース ファイル\TitleScene</Filter>
     </ClCompile>
-    <ClCompile Include="ObjectManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -104,6 +101,18 @@
     </ClCompile>
     <ClCompile Include="GameUI.cpp">
       <Filter>ソース ファイル\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>ソース ファイル\GameScene\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectManager.cpp">
+      <Filter>ソース ファイル\GameScene\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="BlackOut.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="GameOver.cpp">
+      <Filter>ソース ファイル\scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,6 +181,12 @@
     </ClInclude>
     <ClInclude Include="GameUI.h">
       <Filter>ヘッダー ファイル\GameScene.h</Filter>
+    </ClInclude>
+    <ClInclude Include="BlackOut.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOver.h">
+      <Filter>ヘッダー ファイル\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

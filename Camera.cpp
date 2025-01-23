@@ -43,7 +43,15 @@ void Camera::Initialize()
 	Effekseer_Sync3DSetting();
 
 	isChangeUpdate = false;
-
+	AimPosition = VGet(2, 4, 5);
+	
+	LookPosition = VGet(0, 20, 0);
+	x = 0;
+	y = 5;
+	z = 0;
+	addY = 1.0f;
+	time = 0;
+	isChangeUpdate = false;
 }
 
 /// <summary>
@@ -62,48 +70,47 @@ void Camera::Update(const VECTOR& playerPosition,const VECTOR& enemyPosition)
 	{
 		y = 20;
 	}
-	/*if (CheckHitKey(KEY_INPUT_Q))
-	{
-		AimPosition.x++;
-	}
-	if (CheckHitKey(KEY_INPUT_E))
-	{
-		AimPosition.x--;
-	}
-	if (CheckHitKey(KEY_INPUT_UP))
-	{
-		AimPosition.z++;
-	}
-	if (CheckHitKey(KEY_INPUT_DOWN))
-	{
-		AimPosition.z--;
-	}*/
-	//LookPosition = VGet(enemyPosition.x, enemyPosition.y, enemyPosition.z);
 
 	SetCameraPositionAndTarget_UpVecY(AimPosition,LookPosition);
 
 }
 
-void Camera::StartUpdate()
+void Camera::StartUpdate(Enemy& enemy)
 {
+
 	time++;
 
-	if (time <= 100)
+	
+	if (time >= 30 && time <= 80)
+	{
+		ChangeLightTypeDir(VGet(0, -1, 0));
+		if (LookPosition.y >= 5)
+		{
+			LookPosition.y -= 0.5f;
+		}
+		if(LookPosition.y <= 5)
+		{
+			LookPosition.y = 5;
+		}
+	}
+	else if (time >= 80 && time <= 130)
 	{
 		ChangeLightTypeDir(VGet(0, -1, 0));
 		AimPosition = VGet(2, 4, 5);
 		LookPosition = VGet(0, 5, 0);
 	}
-	else if (time <= 230)
+	else if (time >= 130 && time <= 420)
 	{
-		if (time == 120)
+		if (time == 140)
 		{
 			ChangeLightTypeDir(VGet(0.577350f, -0.577350f, 0.577350f));
 		}
 
 		y -= addY;
-		addY -= 0.15;
+		addY -= 0.15f;
+	
 		z += 1.2f;
+
 		if (y >= 20)
 		{
 			y = 20;
@@ -112,12 +119,14 @@ void Camera::StartUpdate()
 		{
 			z = 50;
 		}
+
 		LookPosition = VGet(0, y, z);
 	}
-	else
+	else if (time >= 420)
 	{
 		time = 0;
 		isChangeUpdate = true;
+		enemy.ResetTime();
 	}
 
 	SetCameraPositionAndTarget_UpVecY(AimPosition, LookPosition);
@@ -139,6 +148,7 @@ void Camera::EndUpdate(const VECTOR& enemyPosition)
 	{
 		AimPosition = VGet(-29, 40, 7);
 	}
+
 	time++;
 	SetCameraPositionAndTarget_UpVecY(AimPosition, LookPosition);
 

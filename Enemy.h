@@ -13,18 +13,12 @@ public:
     void Initialize();
     void Update();
     void Draw();
-    VECTOR GetBulletPosition() { return bulletPosition; }
-    VECTOR GetTopPosition() { return topPosition; }
-    VECTOR GetBottomPosition() const { return bottomPosition; }
     
     void SetIsPlayerAttackHit(const bool value) { isPlayerAttackHit = value; }
     void ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
         EnemyBreath& breath);
-    void GetPosition(VECTOR& setPosition);
-    void SetPosition(const VECTOR& getPosition);
-    void SetPlayerMoveSpeed(float moveSpeed);
-    void SetIsPlayerMove(bool isMove);
-    void SetIsPlayerMoveDirection(bool isTopMove, bool isBottomMove, bool isRightMove, bool isLeftMove);
+    void StartUpdate();
+    void ResetTime(){ standTime = 0; }
     
     void AttackDesignation();
     void PlayerMovementPrediction();
@@ -33,9 +27,19 @@ public:
     void ChangeMotion(int numberNum);
     void MotionUpdate();
 
-    //ゲッター
+    //////////////////////////////////////
+    // ゲッター
+    //////////////////////////////////////
     int GetHP() { return HP; }
     float GetRadius() { return radius; }
+    VECTOR GetBulletPosition() { return bulletPosition; }
+    VECTOR GetTopPosition() { return topPosition; }
+    VECTOR GetBottomPosition() const { return bottomPosition; }
+
+    //////////////////////////////////////////
+    // セッター
+    //////////////////////////////////////////
+    void SetPosition(const VECTOR& getPosition) { playerPos = getPosition; }  
 
     // インスタンス化
     EnemyBullet* bullet = new EnemyBullet();
@@ -61,11 +65,6 @@ private:
     bool isAttack;                      //攻撃するか
     bool isPlayerAttackHit;              //攻撃を当てられたか
     bool isKnockback;                   //のけぞったか
-    bool isPlayerMove;                  //プレイヤーが動くか
-    bool isLeftMove;                    //左に動いたか
-    bool isRightMove;                   //右に動いたか
-    bool isTopMove;                     //上に動いたか
-    bool isBottomMove;                  //下に動いたか
     bool isBulletNumber;                //何回攻撃するか
     VECTOR topPosition;                    //Enemyのポジション
     VECTOR bottomPosition;           //球のポジション
@@ -74,7 +73,6 @@ private:
     VECTOR bulletPosition;              //弾のポジション
     VECTOR bulletMotionPosition;        //弾攻撃時のモデルポジション
     VECTOR playerPos;                   //プレイヤーのポジション
-    VECTOR futurePosition;              //未来のポジション
     float bulletPositionStack;          
     float playerMoveSpeed;              //プレイヤーの速度
     float bulletSpeed_Y;                //弾の縦に動く速度
@@ -85,6 +83,6 @@ private:
     static constexpr int breathAttack = 6;      //ブレス
     static constexpr int bulletAttack = 7;      //弾攻撃
     static constexpr int stand = 16;             //待機
-    static constexpr float radius = 20;   //球の半径
+    static constexpr float radius = 25;   //球の半径
 };
 

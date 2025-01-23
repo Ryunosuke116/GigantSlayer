@@ -14,13 +14,18 @@ Object::Object()
     position = VGet(0, 0, 0);
     addPosition = VGet(0, 0, 0);
     radius = 3;
+    graphHandle = LoadGraph("material/X.png");
     isHitPlayer = false;
     isHit = false;
     isGetPosition = false;
     isCanCatch = false;
     isHitBreath = false;
+    isObjectHitEnemy = false;
+    isDrop = false;
     effect = new Effect();
+    attackEffect = new Effect();
     effect->Initialize("material/TouhouStrategy/black.efkefc", 1.2f, position);
+    attackEffect->Initialize("material/TouhouStrategy/explosion.efkefc", 0.5f, VGet(0,0,0));
 }
 
 /// <summary>
@@ -44,9 +49,13 @@ void Object::Initialize(Enemy& enemy)
     isGetPosition = false;
     isCanCatch = false;
     isHitBreath = false;
-    enemy.GetPosition(position);
-    addPosition = VGet(1, 0, 1);
+    isThrow = false;
+    isPushKey = false;
     isObject = false;
+    isObjectHitEnemy = false;
+    isDrop = false;
+    position = enemy.GetBottomPosition();
+    addPosition = VGet(1, 0, 1);
     effect->StopEffect();
 }
 
@@ -61,6 +70,7 @@ void Object::Update(Enemy& enemy, Calculation& calculation, const Input& input)
     {
         position = enemy.bullet->GetFellPosition();
         position.y += 5.0f;
+        position.y = 3;
         enemy.bullet->SetIsEmerge(false);
         isObject = true;
     }
@@ -68,18 +78,6 @@ void Object::Update(Enemy& enemy, Calculation& calculation, const Input& input)
 
     if (isObject)
     {
-
-        //オブジェクトとプレイヤーが当たった場合消す
-        if (isHitPlayer && isCanCatch)
-        {
-            effect->Initialize("material/TouhouStrategy/black.efkefc", 1.2f, position);
-            enemy.GetPosition(position);
-            isHitPlayer = false;
-            isCanCatch = false;
-            isHitBreath = false;
-            isObject = false;
-            addPosition = VGet(1, 0, 1);
-        }
 
         //ブレスが当たったらつかめるようにする
         if (enemy.breath->isAttack && !isHitBreath)
@@ -92,7 +90,7 @@ void Object::Update(Enemy& enemy, Calculation& calculation, const Input& input)
                     if (isHitBreath)
                     {
                         isCanCatch = true;
-                        DirectionCalculation(breath.position);
+                        AddPositionCalculation(breath.position);
                         effect->Initialize("material/TouhouStrategy/miko_hihou_effect.efkefc",1.2f, position);
                         break;
                     }
@@ -114,6 +112,7 @@ void Object::Update(Enemy& enemy, Calculation& calculation, const Input& input)
             }
       
         }
+        AttackHitCheck(enemy, calculation);
 
         //-----------------------------//
         //      エフェクト関連
@@ -126,26 +125,10 @@ void Object::Update(Enemy& enemy, Calculation& calculation, const Input& input)
     //生成されていないときは固定ポジへ
     else
     {
-        enemy.GetPosition(position);
+        position = enemy.GetBottomPosition();
     }
-}
 
-/// <summary>
-/// どのオブジェクトを起動するか
-/// </summary>
-/// <param name="enemy"></param>
-void Object::WhichOnObject(Enemy& enemy)
-{
-    if (enemy.bullet->GetIsEmerge() && !isObject)
-    {
-        isObject = true;
-        enemy.bullet->SetIsEmerge(false);
-    }
-}
-
-void Object::WhichOffObject(const bool& isEmerge)
-{
-    isObject = false;
+    Throw(enemy);
 }
 
 /// <summary>
@@ -153,31 +136,113 @@ void Object::WhichOffObject(const bool& isEmerge)
 /// </summary>
 void Object::Draw()
 {
-    if (isObject)
+    if (isCanCatch)
     {
-        //DrawSphere3D(position, radius, 16, GetColor(0, 0, 0), GetColor(255, 255, 255), false);
+        VECTOR drawPosition = position;
+        drawPosition.y = position.y + 4.0f;
+        DrawBillboard3D(drawPosition, 0.5f, 0.5f, 1.5f, 0.0f, graphHandle, true);
     }
         printfDx("object.x %f\n", position.x);
         printfDx("object.z %f\n", position.z);
 
 }
 
-/// <summary>
-/// プレイヤーが当たっているかどうか
-/// </summary>
-/// <param name="isHit"></param>
-void Object::PlayerIsHit(const bool& isHit)
+void Object::Throw(Enemy& enemy)
 {
-   isHitPlayer = isHit;
+    //行動不能状態ではなければ攻撃可能
+    if (isThrow)
+    {
+        if (!isPushKey)
+        {
+   
+            keepTargetMoveDirection.y = 0;
+            //速度
+            keepTargetMoveDirection = VScale(keepTargetMoveDirection, AttackSpeed);
+
+            attackSpeedY = JumpPower;
+            isPushKey = true;
+            isPlayerHold = false;
+        }
+    }
+
+    //攻撃の流れ
+    if (isPushKey)
+    {
+        position = VAdd(position, keepTargetMoveDirection);
+        position.y += attackSpeedY;
+        attackSpeedY -= Gravity;
+
+        float maxRange = 33.0f;
+
+        //中心からの距離を測る
+        float r = VSize(VSub(position, VGet(0, 0, 0)));
+
+        //一定の距離に達したらそれ以上いけないようにする
+        if (r >= maxRange || r <= -maxRange)
+        {
+            if (position.y <= -50.0f)
+            {
+                isPushKey = false;
+                isThrow = false;
+                Reset(enemy);
+            }
+        }
+        else
+        {
+            if (position.y <= 3.0f)
+            {
+                isHitPlayer = false;
+                isPushKey = false;
+                isThrow = false;
+                isCanCatch = true;
+                position.y = 3.0f;
+            }
+        }
+
+    }
+   
 }
 
-/// <summary>
-/// つかめるか
-/// </summary>
-/// <param name="value"></param>
-void Object::SetIsCanCatch(const bool& value)
+
+void Object::AttackHitCheck(Enemy& enemy, Calculation& calculation)
 {
-    isCanCatch = value;
+    //カプセルと球
+    VECTOR closePosition = calculation.CapsuleHitConfirmation(enemy.GetTopPosition(), enemy.GetBottomPosition(),
+        position, enemy.GetRadius(), radius);
+
+   
+    if (isPushKey)
+    {
+
+        isObjectHitEnemy = calculation.HitConfirmation(position, closePosition, radius, enemy.GetRadius());
+        //当たったら消す
+        if (isObjectHitEnemy)
+        {
+            attackEffect->PlayEffect();
+            attackEffect->PositionUpdate(position);
+            attackEffect->SetSpeed(2.0f);
+            position = enemy.GetBottomPosition();
+            isPushKey = false;
+            enemy.SetIsPlayerAttackHit(true);
+            Reset(enemy);
+        }
+    }
+
+    if (isObjectHitEnemy)
+    {
+     
+        //時間経過
+        attackEffectTime++;
+
+        if (attackEffectTime >= 105)
+        {
+            attackEffect->StopEffect();
+            attackEffectTime = 0;
+            isObjectHitEnemy = false;
+        }
+
+    }
+
 }
 
 /// <summary>
@@ -185,12 +250,23 @@ void Object::SetIsCanCatch(const bool& value)
 /// </summary>
 /// <param name="position"></param>
 /// <param name="comparisonPosition"></param>
-void Object::DirectionCalculation(const VECTOR comparisonPosition)
+float Object::DirectionCalculation(const VECTOR comparisonPosition)
 {
-    addPosition = VGet(0, 0, 0);
     //飛んでいく方向を計算
     float r = atan2((comparisonPosition.x - position.x),
         (comparisonPosition.z - position.z));
+
+    return r;
+}
+
+/// <summary>
+/// 加算計算
+/// </summary>
+/// <param name="comparisonPosition"></param>
+void Object::AddPositionCalculation(const VECTOR comparisonPosition)
+{
+    float r = DirectionCalculation(comparisonPosition);
+    addPosition = VGet(0, 0, 0);
     addPosition.x = cos(r);
     addPosition.z = sin(r);
 
@@ -200,7 +276,82 @@ void Object::DirectionCalculation(const VECTOR comparisonPosition)
     {
         addPosition.z *= -1.0f;
     }
-    
+
     addPosition = VScale(addPosition, speed);
     subPosition = VScale(addPosition, 0.2f);
+}
+
+/// <summary>
+/// のけぞった時に後ろに投げられる
+/// </summary>
+void Object::LeanBackObject()
+{
+    if (isLeanBack)
+    {
+        DropSpeed = GravityPower;
+        isDrop = true;
+        isLeanBack = false;
+        isPlayerHold = false;
+        isHitPlayer = false;
+        isPushKey = false;
+        isThrow = false;
+        isCanCatch = true;
+
+        keepTargetMoveDirection.y = 0;
+        keepTargetMoveDirection = VNorm(keepTargetMoveDirection);
+        keepTargetMoveDirection = VScale(keepTargetMoveDirection,-backSpeed);
+
+    }
+
+    if (isDrop)
+    {
+
+        //方向を正規化
+        VECTOR addPosition = VNorm(GetKeepTargetMoveDirection());
+
+        //方向に移動速度を乗算
+        addPosition = VScale(addPosition, backSpeed);
+
+        position.y += DropSpeed;
+        DropSpeed -= Gravity;
+
+        position = VAdd(position, addPosition);
+
+        if (position.y <= 3.0f)
+        {
+            position.y = 3.0f;
+            isDrop = false;
+        }
+    }
+}
+
+/// <summary>
+/// 
+/// </summary>
+void Object::LetGoCalculation(const VECTOR objectPosition)
+{
+    VECTOR addPosition = VGet(0, 0, 0);
+
+    float r = DirectionCalculation(objectPosition);
+    addPosition.x = cos(r);
+    addPosition.z = sin(r);
+    addPosition = VNorm(addPosition);
+
+    addPosition = VScale(addPosition, 1.5f);
+    position = VAdd(position,addPosition);
+
+}
+
+void Object::Reset(Enemy& enemy)
+{
+    effect->Initialize("material/TouhouStrategy/black.efkefc", 1.2f, position);
+    position = enemy.GetBottomPosition();
+    isHitPlayer = false;
+    isCanCatch = false;
+    isHitBreath = false;
+    isObject = false;
+    isThrow = false;
+    isPushKey = false;
+    addPosition = VGet(1, 0, 1);
+    effect->StopEffect();
 }

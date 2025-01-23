@@ -5,6 +5,7 @@
 #include "Game.h"
 #include "Result.h"
 #include "Title.h"
+#include "GameOver.h"
 #include "BaseScene.h"
 #include "SceneManager.h"
 
@@ -16,7 +17,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 {
 
     // 画面モードのセット
-    ChangeWindowMode(TRUE);
+    ChangeWindowMode(FALSE);
     SetGraphMode(1600, 900, 16);
 
     // DirectX11を使用するようにする。(DirectX9も可、一部機能不可)
@@ -59,10 +60,10 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     SceneManager* sceneManager = new SceneManager();
 
-    
     sceneManager->Add<Title>("Title");
     sceneManager->Add<Game>("Game");
     sceneManager->Add<Result>("Result");
+    sceneManager->Add<GameOver>("GameOver");
 
 
    while (!ProcessMessage() && !ClearDrawScreen() && !CheckHitKey(KEY_INPUT_ESCAPE))

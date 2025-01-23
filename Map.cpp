@@ -33,6 +33,7 @@ void Map::Initialize()
 {
     fieldPosition = VGet(0, -1, 0);
     rotationPosition = VGet(0, 3.2f, 0);
+    time = 0;
     // スカイドームのポジション設定
     backGroundHandle = MV1LoadModel("material/skyDome/sunSet.mv1");
     fieldHandle = MV1LoadModel("material/uploads_files_2988017_round+table.mv1");

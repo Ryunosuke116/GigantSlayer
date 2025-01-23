@@ -20,13 +20,20 @@ EnemyBullet::EnemyBullet()
     positionStack = 0;
     playerMoveSpeed = 0;
     scale = 0;
-    bulletSpeed_Y = 2.5f;
+    bulletSpeed_Y = 2.0f;
     isAttack = false;
     isPlayerMove = false;
     isEffect = false;
     isEmerge = false;
     isCircleBullet = false;
     isSetUpMotion = false;
+
+    if (effect == NULL)
+    {
+        effect = new Effect();
+        bulletColor = new Effect();
+
+    }
 }
 
 /// <summary>
@@ -44,11 +51,8 @@ void EnemyBullet::Initialize(const VECTOR EnemyPosition)
 {
     //ポジション初期化
     position = VGet(EnemyPosition.x, EnemyPosition.y + 35, EnemyPosition.z);
-    //インスタンス化
-    effect = new Effect;
-    bulletColor = new Effect;
     //初期化
-    effect->Initialize("material/TouhouStrategy/patch_stElmo_area.efkefc", 1.2f,position);
+    effect->Initialize("material/TouhouStrategy/patch_stElmo_area.efkefc", 1.2f, position);
     bulletColor->Initialize("material/TouhouStrategy/enemyBullet.efkefc", 1.6f, position);
     effect->StopEffect();
     bulletColor->StopEffect();
@@ -127,6 +131,10 @@ void EnemyBullet::Move(const VECTOR enemyPosition,EnemyCircleAttack& circleAttac
         if (!isAttack)
         {
             scale += 0.02f;
+            if (scale >= 1.0f)
+            {
+                scale = 1.0f;
+            }
         }
         bulletColor->SetScale(VGet(scale, scale, scale));
     }
@@ -137,7 +145,7 @@ void EnemyBullet::Move(const VECTOR enemyPosition,EnemyCircleAttack& circleAttac
     {
         BulletMove();
 
-        bulletSpeed_Y -= 0.08f;
+        bulletSpeed_Y -= 0.05f;
         //　0になるまで落下させる　
         if (position.y > 0.0f)
         {

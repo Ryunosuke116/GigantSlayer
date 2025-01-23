@@ -14,10 +14,10 @@ class Player
 private:
     static constexpr float  radius      = 2;        //半径    
     static constexpr float  AttackSpeed = 0.65f;     //弾の速度
-    static constexpr float	MoveSpeed   = 0.5f;	    // 移動速度
+    static constexpr float	MoveSpeed   = 0.4f;	    // 移動速度
     static constexpr float  slowMoveSpeed = 0.3f;   //移動速度
-    static constexpr float	JumpPower   = 1.5f;	    // ジャンプ力
-    static constexpr float	Gravity     = 0.08f;	// 重力
+    static constexpr float	JumpPower   = 1.1f;	    // ジャンプ力
+    static constexpr float	Gravity     = 0.06f;	// 重力
     static constexpr float  AttackGravity = 0.15f;  //攻撃の重力
     static constexpr float	AngleSpeed  = 0.4f;	    // 角度変化速度
     static constexpr float  maxRange    = 33.0f;    //最大範囲
@@ -96,6 +96,7 @@ public:
     void Update(Calculation& calculation,                   //更新
         std::array<Object*, 4> object,
         const Input& input, Enemy& enemy);
+    void StartUpdate();
     void Draw(const Map& map);
     void UpdateAngle();
     void Attack(const Input& input);
@@ -115,10 +116,22 @@ public:
     void ChangeMotion(int motionNum);
     void Motion_HoldorUnHold(int motionNum,int holdMotionNum);
 
+    ////////////////////////////////////////////////
+    // ゲッター
+    ///////////////////////////////////////////////
+    int GetHP() { return HP; }
+    int GetMotionNum() { return motionNum; }
     float GetMoveSpeed() { return MoveSpeed; }
     bool GetIsMove() { return isMove; }
+    bool GetIsPushKey() { return isPushKey; }
+    VECTOR GetTargetMoveDirection_Norm() { return VNorm(targetMoveDirection); }
     VECTOR GetPosition() const { return position; }
+    VECTOR GetTopPosition()const { return topSpherePosition; }
+
+    //-------------------------------------------//
+    // セッター
+    //-------------------------------------------//
     void SetPosition(VECTOR newPosition) { position = newPosition; }
-    int GetHP() { return HP; }
+    void SetIsPushKey(bool newIsPushKey) { isPushKey = newIsPushKey; }
 
 };

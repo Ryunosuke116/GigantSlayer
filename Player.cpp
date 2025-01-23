@@ -67,7 +67,7 @@ void Player::Initialize()
 {
     HP = 3;
     invincibleTime = 0;
-    position = VGet(0, 0, 0);
+    position = VGet(0, 0, -50);
     targetMoveDirection = VGet(0, 0, 0);
     objectPosition = VGet(0, 5, 0);
     keepTargetMoveDirection = VGet(0, 0, 0);
@@ -98,7 +98,10 @@ void Player::Update(Calculation& calculation,
     std::array<Object*, 4> object,
     const Input& input, Enemy& enemy)
 {
-
+    if (CheckHitKey(KEY_INPUT_8))
+    {
+        HP = 0;
+    }
     VECTOR	moveVec = VGet(0, 0, 0);
 
     //playerの向き調整
@@ -132,7 +135,7 @@ void Player::Update(Calculation& calculation,
         //移動していないとき
         else
         {
-            if (isChangeMotion)
+            if (isChangeMotion && !isJump)
             {
                 //待機モーションに変更
                 Motion_HoldorUnHold(stop, stop_Hold);
@@ -179,6 +182,29 @@ void Player::Update(Calculation& calculation,
     bottomSpherePosition = VGet(position.x, position.y + 1.0f, position.z);
 
     //攻撃
+    if (input.GetNowFrameInput() & PAD_INPUT_C && stock >= 1 &&
+        !(motionNum == down || motionNum == standUp || motionNum == pickUp_Hold ||
+            motionNum == pickUp) && isAttackHold)
+    {
+        //プレイヤーの向きを保存
+        //正規化する
+        keepTargetMoveDirection = VNorm(targetMoveDirection);
+        keepTargetMoveDirection.y = 0;
+
+        for (auto& objects : object)
+        {
+            if (objects->GetIsPlayerHold())
+            {
+                objects->SetIsThrow(true);
+                stock--;
+                if (stock <= 0)
+                {
+                    isAttackHold = false;
+                    
+                }
+            }
+        }
+    }
     Attack(input);
     AttackHitCheck(enemy, calculation);
 
@@ -239,8 +265,9 @@ void Player::Draw(const Map& map)
     {
        // DrawCapsule3D(topSpherePosition, bottomSpherePosition, radius, 16, GetColor(0, 0, 0), GetColor(0, 0, 255), false);
     }
-    DrawSphere3D(objectPosition, 1.5f, 16, GetColor(0, 0, 0), GetColor(255, 0, 0), false);
-    DrawLine3D(testPosition, closePosition, GetColor(255, 0, 0));
+
+    //DrawSphere3D(objectPosition, 1.5f, 16, GetColor(0, 0, 0), GetColor(255, 0, 0), false);
+    //DrawLine3D(testPosition, closePosition, GetColor(255, 0, 0));
 
     if (isHitEnemyAttack)
     {
@@ -365,7 +392,6 @@ void Player::Move(const Input& input, VECTOR& moveVec)
 void Player::Jump(const Input& input, VECTOR& moveVec)
 {
    
-
     if (isJump)
     {
         currentJumpPower -= Gravity;
@@ -401,11 +427,11 @@ void Player::PickUpObject(Object& object, const Input& input)
 {
 
     //オブジェクトとプレイヤーが当たった場合消す
-    if (input.GetNowFrameInput() & PAD_INPUT_X || CheckHitKey(KEY_INPUT_5))
+    if (input.GetNowFrameInput() & PAD_INPUT_C || CheckHitKey(KEY_INPUT_5))
     {
         isAttackHold = true;
         ChangeMotion(pickUp_Hold);
-        object.PlayerIsHit(true);
+        object.SetPlayerIsHit(true);
         //球に触れたときストックを増やす
         stock++;
     }
@@ -418,66 +444,27 @@ void Player::PickUpObject(Object& object, const Input& input)
 void Player::Attack(const Input& input)
 {
     //行動不能状態ではなければ攻撃可能
-    if (input.GetNowFrameInput() & PAD_INPUT_B && stock >= 1 && 
-        !(motionNum == down || motionNum == standUp))
-    {
-        if (!isPushKey)
-        {
-            //プレイヤーの向きを保存
-            //正規化する
-            keepTargetMoveDirection = VNorm(targetMoveDirection);
-            keepTargetMoveDirection.y = 0;
-            //速度
-            keepTargetMoveDirection = VScale(keepTargetMoveDirection, AttackSpeed);
-            //プレイヤーの位置から撃つように
-            objectPosition = VGet(topSpherePosition.x, topSpherePosition.y, topSpherePosition.z);
+    //if (input.GetNowFrameInput() & PAD_INPUT_C && stock >= 1 && 
+    //    !(motionNum == down || motionNum == standUp || motionNum == pickUp_Hold ||
+    //        motionNum == pickUp) && isAttackHold)
+    //{
+    //    if (!isPushKey)
+    //    {
+    //        //プレイヤーの向きを保存
+    //        //正規化する
+    //        keepTargetMoveDirection = VNorm(targetMoveDirection);
+    //        keepTargetMoveDirection.y = 0;
 
-            attackSpeedY = JumpPower;
-            isPushKey = true;
-            stock--;
-            if (stock <= 0)
-            {
-                isAttackHold = false;
-            }
-        }
-    }
+    //        //速度
+    //        keepTargetMoveDirection = VScale(keepTargetMoveDirection, AttackSpeed);
+    //        //プレイヤーの位置から撃つように
+    //        objectPosition = VGet(topSpherePosition.x, topSpherePosition.y, topSpherePosition.z);
 
-    //攻撃の流れ
-    if (isPushKey)
-    {
-        objectPosition = VAdd(objectPosition, keepTargetMoveDirection);
-        objectPosition.y += attackSpeedY;
-        attackSpeedY -= Gravity;
-
-        if (objectPosition.y <= 0)
-        {
-            isPushKey = false;
-        }
-    }
-    else
-    {
-        objectPosition = VGet(topSpherePosition.x, topSpherePosition.y + 5.0f, topSpherePosition.z);
-    }
-
-    if (isObjectHitEnemy)
-    {
-        if (attackEffectTime == 0)
-        {
-            attackEffect->PlayEffect();
-            attackEffect->PositionUpdate(attackPosition);
-            attackEffect->SetSpeed(2.0f);
-        }
-        //時間経過
-        attackEffectTime++;
-
-        if (attackEffectTime >= 105)
-        {
-            attackEffect->StopEffect();
-            attackEffectTime = 0;
-            isObjectHitEnemy = false;
-        }
-        
-    }
+    //        attackSpeedY = JumpPower;
+    //        isPushKey = true;
+    //   
+    //    }
+    //}
 
 }
 
@@ -543,8 +530,6 @@ void Player::EnemyHitCheck(Enemy& enemy,Calculation& calculation)
     //プレイヤーと敵の攻撃が接触したか
     isHitEnemyAttack = calculation.HitConfirmation(closePosition, enemy.bullet->GetPosition(), radius, enemy.bullet->GetRadius());
 
-    //testPosition = VGet(enemy.bullet->GetPosition().x, enemy.bullet->GetPosition().y, enemy.bullet->GetPosition().z);
-
     //サークル攻撃の当たり判定
     if (enemy.circleAttack->isAttack)
     {
@@ -586,7 +571,9 @@ void Player::Down()
     //攻撃に当たった場合、少しの間行動不能にする　
     if (isHitEnemyAttack)
     {
-        //HP--;
+        stock = 0;
+        isAttackHold = false;
+        HP--;
         ChangeMotion(down);
     }
 }
@@ -597,6 +584,7 @@ void Player::Down()
 /// <param name="motionNum"></param>
 void Player::ChangeMotion(int motionNum)
 {
+    //初期化
     MV1DetachAnim(modelHandle, attachIndex);
     // 再生時間の初期化
     playTime = 0;
@@ -604,8 +592,10 @@ void Player::ChangeMotion(int motionNum)
     MV1SetAttachAnimTime(modelHandle, attachIndex, playTime);
 
     this->motionNum = motionNum;
+
     // ３Ｄモデルの０番目のアニメーションをアタッチする
     attachIndex = MV1AttachAnim(modelHandle, this->motionNum, -1, FALSE);
+
     // アタッチしたアニメーションの総再生時間を取得する
     totalTime = MV1GetAttachAnimTotalTime(modelHandle, attachIndex);
 }
@@ -653,10 +643,11 @@ void Player::MotionUpdate()
     {
         playTime += 1.2f;
     }
+
     //pickUpモーション時
     else if (motionNum == pickUp || motionNum == pickUp_Hold)
     {
-        playTime += 1.4f;
+        playTime += 1.2f;
         if (playTime >= 53.0f)
         {
             Motion_HoldorUnHold(stand,stand_Hold);
@@ -705,6 +696,11 @@ void Player::MotionUpdate()
 
     }
 
+    if (motionNum == run_Hold && !isAttackHold)
+    {
+        ChangeMotion(run);
+    }
+
     //playTimeがtotalTimeを超えたらリセットする
     if (playTime >= totalTime)
     {
@@ -722,4 +718,65 @@ void Player::MotionUpdate()
 void Player::GetPosition(VECTOR& setPosition)
 {
     setPosition = VGet(position.x, position.y, position.z);
+}
+
+
+void Player::StartUpdate()
+{
+    VECTOR	moveVec = VGet(0, 0, 0);
+
+    //playerの向き調整
+    UpdateAngle();
+
+    if (position.z >= 0)
+    {
+        isMove = false;
+    }
+    else
+    {
+        moveVec = VAdd(moveVec, VGet(0, 0, 1));
+        isMove = true;
+    }
+
+    //移動ボタンが押されたとき正規化
+    if (isMove)
+    {
+        targetMoveDirection = VNorm(moveVec);
+
+        moveVec = VScale(targetMoveDirection, MoveSpeed);
+        if (stock)
+        {
+            moveVec = VScale(targetMoveDirection, slowMoveSpeed);
+        }
+
+        //動いていてジャンプ中でなければモーション切り替え
+        if (!isChangeMotion && !isJump)
+        {
+            //走るモーションに変更
+            Motion_HoldorUnHold(run, run_Hold);
+        }
+
+    }
+    //移動していないとき
+    else
+    {
+        if (isChangeMotion && !isJump)
+        {
+            //待機モーションに変更
+            Motion_HoldorUnHold(stop, stop_Hold);
+        }
+    }
+
+    //ポジション更新
+    position = VAdd(position, moveVec);
+
+    // プレイヤーのモデルの座標を更新する
+    MV1SetPosition(modelHandle, position);
+
+
+    ///////////////////////////////////////
+    //  モーション
+    //////////////////////////////////////
+
+    MotionUpdate();
 }

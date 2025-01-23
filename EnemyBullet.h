@@ -26,14 +26,14 @@ private:
     float playerMoveSpeed;
     float bulletSpeed_Y;  
     float scale;
-    Effect* effect;
-    Effect* bulletColor;
+    Effect* effect = NULL;
+    Effect* bulletColor = NULL;
     static constexpr float theta    = 30;               //ê˘âÒäpìxÇÃè„å¿
     static constexpr float speed    = 2.0f;             //ë¨ìx
     static constexpr float radius   = 5.0f;             //îºåa
-    static constexpr float circleAttackBulletSpeed = 0.5f;
+    static constexpr float circleAttackBulletSpeed = 0.2f;
 
-    static constexpr int maxPositionStack = 50;
+    static constexpr int maxPositionStack = 65;
 
 public:
 
@@ -52,13 +52,19 @@ public:
     void SetPlayerPosition(VECTOR& getPosition);
     void SetPosition(VECTOR& getPosition);
     void SwitchingIsCircleBullet();
-    VECTOR GetPosition() { return position; }
-    VECTOR GetFellPosition() { return fellPosition; }
-    bool GetIsEmerge() { return isEmerge; }
-    float GetRadius(){ return radius;}
     void SetIsEmerge(const bool value) { isEmerge = value; }
     void SetIsCircleBullet(const bool value) { isCircleBullet = value; }
     void SetIsAttack(const bool value) { isAttack = value; }
     void SetIsSetUpMotion(const bool value) { isSetUpMotion = value; }
+
+    ////////////////////////////////////
+    // ÉQÉbÉ^Å[
+    ///////////////////////////////////
+    VECTOR GetPosition() { return position; }
+    VECTOR GetFellPosition() { return fellPosition; }
+    bool GetIsEmerge() { return isEmerge; }
+    bool GetIsAttack() { return isAttack; }
+    float GetRadius(){ return radius;}
+    
 };
 

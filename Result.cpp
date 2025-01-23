@@ -4,7 +4,15 @@
 /// <summary>
 /// インスタンス化
 /// </summary>
-Result::Result(SceneManager& manager) : BaseScene{ manager } {}
+Result::Result(SceneManager& manager) : BaseScene{ manager } 
+{
+    if (input == NULL)
+    {
+        font_back = LoadGraph("material/lose_backGround.png");
+        clear_font = LoadGraph("material/GAMECLEAR_01.png");
+        input = new Input();
+    }
+}
 
 /// <summary>
 /// デストラクタ
@@ -19,7 +27,7 @@ Result::~Result()
 /// </summary>
 void Result::Initialize()
 {
-
+    
 }
 
 /// <summary>
@@ -27,7 +35,10 @@ void Result::Initialize()
 /// </summary>
 void Result::Update()
 {
-    if (CheckHitKey(KEY_INPUT_SPACE))
+    input->Update();
+
+    if (input->GetNowFrameInput() & PAD_INPUT_A || 
+        CheckHitKey(KEY_INPUT_SPACE))
     {
         ChangeScene("Title");
     }
@@ -38,5 +49,6 @@ void Result::Update()
 /// </summary>
 void Result::Draw()
 {
-    printfDx("SPACE START");
+    DrawGraph(0, 400, font_back, true);
+    DrawGraph(200, 380, clear_font, true);
 }

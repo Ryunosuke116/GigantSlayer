@@ -17,6 +17,7 @@
 #include "EnemyManager.h"
 #include"Common.h"
 #include"GameUI.h"
+#include"BlackOut.h"
 #include <iostream>
 #include <array>
 
@@ -30,6 +31,7 @@ public:
     void Initialize();
     void Update();
     void Draw();
+    void SceneChanger(Player& player, Enemy& enemy, Camera& camera,GameUI& gameUI);
 private:
     static constexpr int objectNumber = 4;      //オブジェクトの数
     int alpha;
@@ -50,5 +52,7 @@ private:
     Enemy* enemy = NULL;
     Common* common = NULL;
     GameUI* gameUI = NULL;
+    ObjectManager* objectManager = NULL;
+    BlackOut* blackOut = NULL;
 };
 

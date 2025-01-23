@@ -14,7 +14,10 @@ void Common::Update(Player& player, std::array<Object*, 4> objects)
     for (auto& object : objects)
     {
         VECTOR objectPosition = object->GetPosition();
-        MovableCalculation(objectPosition);
+        if (!object->GetIsThrow())
+        {
+            MovableCalculation(objectPosition);
+        }
         object->SetPosition(objectPosition);
     }
 }

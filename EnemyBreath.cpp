@@ -37,7 +37,7 @@ EnemyBreath::EnemyBreath()
 
 		auto effect = new Effect;
 
-		effect->Initialize("material/TouhouStrategy/utsuho_sun_area1.efkefc", 1.0f, breath.effectPosition);
+		effect->Initialize("material/TouhouStrategy/utsuho_sun_area2.efkefc", 1.0f, breath.effectPosition);
 
 		breath.effect = effect;
 		effect->SetPosition(breath.effectPosition);

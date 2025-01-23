@@ -17,7 +17,6 @@ Enemy::Enemy()
     bulletSpeed = VGet(0, 0, 0);
     bulletPosition = VGet(0, 0, 0);
     playerPos = VGet(0, 0, 0);
-    futurePosition = VGet(0, 0, 0);
     bulletMotionPosition = VGet(0, 0, 0);
     modelHandle = -1;
     bulletPositionStack = 0;
@@ -28,7 +27,6 @@ Enemy::Enemy()
     bulletSpeed_Y = 0.95;
     motionNum = 0;
     isAttack = false;
-    isPlayerMove = false;
     isKnockback = false;
 }
 
@@ -44,6 +42,7 @@ void Enemy::Initialize()
 {
     HP = 100;
     bottomPosition = VGet(0, -30, 60);
+    topPosition = VGet(bottomPosition.x, bottomPosition.y + 50.0f, bottomPosition.z);
     bulletPosition = VGet(bottomPosition.x, bottomPosition.y + 20, bottomPosition.z);
     addPlayTime = 0.4f;
     //モデル読み込み
@@ -129,28 +128,7 @@ void Enemy::Draw()
     breath->Draw();
 
     printfDx("enemy.HP %d\n", HP);
-    if (isPlayerMove)
-    {
-        printfDx("移動中\n", isPlayerMove);
-    }
-}
 
-/// <summary>
-/// 座標の取得
-/// </summary>
-/// <param name="setPosition"></param>
-void Enemy::GetPosition(VECTOR& setPosition)
-{
-    setPosition = VGet(bottomPosition.x, bottomPosition.y, bottomPosition.z);
-}
-
-/// <summary>
-/// 座標を変更
-/// </summary>
-/// <param name="getPosition"></param>
-void Enemy::SetPosition(const VECTOR& getPosition)
-{
-    playerPos = VGet(getPosition.x, getPosition.y, getPosition.z);
 }
 
 /// <summary>
@@ -169,28 +147,6 @@ void Enemy::AttackDesignation()
     bulletSpeed = VScale(bulletSpeed, 0.025);
 
 }
-
-/// <summary>
-/// プレイヤーの移動速度を保存する
-/// </summary>
-/// <param name="moveSpeed"></param>
-void Enemy::SetPlayerMoveSpeed(float moveSpeed)
-{
-    playerMoveSpeed = moveSpeed;
-}
-
-
-
-/// <summary>
-/// プレイヤーが動いているかどうか
-/// </summary>
-/// <param name="isMove"></param>
-void Enemy::SetIsPlayerMove(bool isMove)
-{
-    isPlayerMove = isMove;
-}
-
-
 
 /// <summary>
 /// モーション切り替え
@@ -225,7 +181,7 @@ void Enemy::MotionUpdate()
     //弾攻撃
     else if(motionNum == bulletAttack)
     {
-        playTime += 0.65f;
+        playTime += 0.55f;
     }
     //ブレス攻撃
     else if(motionNum == breathAttack)
@@ -329,14 +285,16 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
         {
             bullet.SetPosition(topPosition);
             bullet.SetIsSetUpMotion(true);
-
         }
     }
     //のけぞり
     if (isPlayerAttackHit)
     {
         HP -= 10;
-        bullet.ResetAttack(bottomPosition);
+        if (!bullet.GetIsAttack())
+        {
+            bullet.ResetAttack(bottomPosition);
+        }
         ChangeMotion(knockback);
         playTime = 19.0f;
         isPlayerAttackHit = false;
@@ -401,4 +359,16 @@ void Enemy::Order(EnemyBullet& bullet,EnemyBreath& breath)
         orderNumber = 0;
         ChangeMotion(bulletAttack);
     }
+}
+
+void Enemy::StartUpdate()
+{
+    MotionUpdate();
+
+    standTime++;
+    if (standTime == 190)
+    {
+        ChangeMotion(breathAttack);
+    }
+ 
 }

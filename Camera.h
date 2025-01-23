@@ -1,6 +1,7 @@
 #pragma once
 #include "DxLib.h"
 #include <vector>
+#include "Enemy.h"
 
 class Camera
 {
@@ -22,7 +23,7 @@ public:
     void Initialize();
     void Update(const VECTOR& playerPosition, const VECTOR& enemyPosition);
     void TitleUpdate();
-    void StartUpdate();
+    void StartUpdate(Enemy& enemy);
     void Draw();
     void Leap(const VECTOR& playerPos, const VECTOR& enemyPosition);
     void EndUpdate(const VECTOR& enemyPosition);
