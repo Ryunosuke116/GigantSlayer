@@ -1,6 +1,5 @@
-#include "ObjectManager.h"
-#include <iostream>
-#include <array>
+#include "Include.h"
+
 
 bool ObjectManager::Comparison(std::array<Object*, 4> object)
 {
@@ -95,7 +94,7 @@ void ObjectManager::LetGoObject(std::array<Object*, 4> object, Calculation& calc
 
 void ObjectManager::LeanBackObject(std::array<Object*, 4> object, Player& player)
 {
-    const int down = 6;
+    const int down = 7;
 
     if (player.GetMotionNum() == down)
     {

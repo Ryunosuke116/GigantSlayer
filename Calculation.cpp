@@ -1,8 +1,65 @@
 #include "DxLib.h"
 #include"EffekseerForDXLib.h"
 #include <vector>
-#include<math.h>    
+#include <math.h>    
 #include "Calculation.h"
+
+void Calculation::UpdateAngle(const VECTOR& direction, float& angle, int& modelHandle)
+{
+    // プレイヤーの移動方向にモデルの方向を近づける
+    float targetAngle;			// 目標角度
+    float difference;			// 目標角度と現在の角度との差
+    float nowAngle = angle;
+
+    // 目標の方向ベクトルから角度値を算出する
+    if (VSize(direction) != 0)
+    {
+        targetAngle = atan2f(-direction.x, -direction.z);
+    }
+
+    // 目標の角度と現在の角度との差を割り出す
+    // 最初は単純に引き算
+    difference = targetAngle - nowAngle;
+
+
+    // ある方向からある方向の差が１８０度以上になることは無いので
+    // 差の値が１８０度以上になっていたら修正する
+    if (difference < -DX_PI_F)
+    {
+        difference += DX_TWO_PI_F;
+    }
+    else if (difference > DX_PI_F)
+    {
+        difference -= DX_TWO_PI_F;
+    }
+    //-DX_PI_F>difference>DX_PI_F
+
+    // 角度の差が０に近づける
+    if (difference > 0.0f)
+    {
+        // 差がプラスの場合は引く
+        difference -= AngleSpeed;
+        if (difference < 0.0f)
+        {
+            difference = 0.0f;
+        }
+    }
+    else
+    {
+        // 差がマイナスの場合は足す
+        difference += AngleSpeed;
+        if (difference > 0.0f)
+        {
+            difference = 0.0f;
+        }
+    }
+
+
+    // モデルの角度を更新
+    nowAngle = targetAngle - difference;
+    angle = nowAngle;
+    MV1SetRotationXYZ(modelHandle, VGet(0.0f, nowAngle, 0.0f));
+}
 
 /// <summary>
 /// 球と球の当たり判定

@@ -1,13 +1,11 @@
 #pragma once
-#include "DxLib.h"
-#include"EffekseerForDXLib.h"
-#include <vector>
-#include "Calculation.h"
-#include "Object.h"
-#include "Input.h"
-#include "Effect.h"
-#include"Map.h"
 
+class Object;
+class Enemy;
+class Calculation;
+class Effect;
+class Input;
+class Map;
 
 class Player
 {
@@ -19,7 +17,7 @@ private:
     static constexpr float	JumpPower   = 1.1f;	    // ジャンプ力
     static constexpr float	Gravity     = 0.06f;	// 重力
     static constexpr float  AttackGravity = 0.15f;  //攻撃の重力
-    static constexpr float	AngleSpeed  = 0.4f;	    // 角度変化速度
+    static constexpr float	AngleSpeed  = 0.2f;	    // 角度変化速度
     static constexpr float  maxRange    = 33.0f;    //最大範囲
     static constexpr float	ShadowSize = 3.0f;	// 影の大きさ
     static constexpr float	ShadowHeight = 10.0f;	// 影が落ちる高さ
@@ -104,7 +102,7 @@ public:
     void AttackHitCheck(Enemy& enemy, Calculation& calculation);
     void Move(const Input& input, VECTOR& moveVec);
     void Jump(const Input& input, VECTOR& moveVec);
-    void GetPosition(VECTOR& setPosition);
+
     void EnemyHitCheck(Enemy& enemy, Calculation& calculation);
     bool ObjectHitCheck(const VECTOR objectPosition,
         const float radius, Calculation& calculation);

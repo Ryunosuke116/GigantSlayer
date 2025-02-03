@@ -1,7 +1,5 @@
 #pragma once
-#include "Input.h"
-#include "BlackOut.h"
-#include"BaseScene.h"
+
 
 class GameClear : public BaseScene
 {
@@ -18,6 +16,8 @@ private:
     int clear_font;
     int font_back;
     int titleBack_font;
+    float alpha;
+    float addAlpha;
     Input* input;
     BlackOut* blackOut;
 };

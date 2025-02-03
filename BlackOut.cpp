@@ -1,5 +1,4 @@
-#include "BlackOut.h"
-#include "DxLib.h"
+#include "Include.h"
 
 /// <summary>
 /// インストラクタ

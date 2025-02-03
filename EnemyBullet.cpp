@@ -1,10 +1,12 @@
-#include "DxLib.h"
-#include"EffekseerForDXLib.h"
+#include <iostream>
 #include <vector>
 #include <cmath>
-#include "Enemy.h"
+#include "DxLib.h"
+#include"EffekseerForDXLib.h"
+#include "Effect.h"
 #include "EnemyCircleAttack.h"
 #include "EnemyBullet.h"
+
 
 /// <summary>
 /// インスタンス化
@@ -18,11 +20,11 @@ EnemyBullet::EnemyBullet()
     effectPosition = VGet(0, 0, 0);
     fellPosition = VGet(0, 0, 0);
     positionStack = 0;
-    playerMoveSpeed = 0;
     scale = 0;
+    effectPlayStack = 0;
+
     bulletSpeed_Y = 2.0f;
     isAttack = false;
-    isPlayerMove = false;
     isEffect = false;
     isEmerge = false;
     isCircleBullet = false;
@@ -56,6 +58,12 @@ void EnemyBullet::Initialize(const VECTOR EnemyPosition)
     bulletColor->Initialize("material/TouhouStrategy/enemyBullet.efkefc", 1.6f, position);
     effect->StopEffect();
     bulletColor->StopEffect();
+    isAttack = false;
+    isEffect = false;
+    isEmerge = false;
+    isCircleBullet = false;
+    isSetUpMotion = false;
+
 }
 
 /// <summary>
@@ -218,8 +226,6 @@ void EnemyBullet::AttackDesignation(const VECTOR EnemyPosition)
     bulletSpeed = VNorm(bulletSpeed);
     //スピードを調整
     bulletSpeed = VScale(bulletSpeed, speed);
-
-
 }
 
 void EnemyBullet::BulletMove()
@@ -228,7 +234,6 @@ void EnemyBullet::BulletMove()
     if (isCircleBullet)
     {
         position.z -= circleAttackBulletSpeed;
-
     }
     //サークル攻撃じゃない場合
     else

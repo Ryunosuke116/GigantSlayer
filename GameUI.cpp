@@ -1,4 +1,4 @@
-#include "GameUI.h"
+#include "Include.h"
 
 /// <summary>
 /// インスタンス化
@@ -7,7 +7,7 @@ GameUI::GameUI()
 {
     HPBar_back = LoadGraph("material/HPbar_02.png");
     enemyHPBar_front = LoadGraph("material/HPbar_03.png");
-    enemyHPBar_name = LoadGraph("material/HPbar_name_1.png");
+    enemyHPBar_name = LoadGraph("material/boss_name_01.png");
     playerHPBar_back = LoadGraph("material/player_HPBar.png");
     playerHPBar_front = LoadGraph("material/player_HPBar_green_01.png");
     playerHandle = LoadGraph("material/player_01.png");
@@ -15,8 +15,27 @@ GameUI::GameUI()
     gameOver_back = LoadGraph("material/lose_backGround.png");
     died_font = LoadGraph("material/died.png");
     start_font = LoadGraph("material/start_01.png");
-    X_button = LoadGraph("material/X_button.png");
-    A_button = LoadGraph("material/A_button_01.png");
+    X_button = LoadGraph("material/X_button_01.png");
+    A_button = LoadGraph("material/A_button_04.png");
+}
+
+/// <summary>
+/// デストラクタ
+/// </summary>
+GameUI::~GameUI()
+{
+    DeleteGraph(HPBar_back);
+    DeleteGraph(enemyHPBar_front);
+    DeleteGraph(enemyHPBar_name);
+    DeleteGraph(playerHPBar_back);
+    DeleteGraph(playerHPBar_front);
+    DeleteGraph(playerHandle);
+    DeleteGraph(shadow);
+    DeleteGraph(died_font);
+    DeleteGraph(start_font);
+    DeleteGraph(X_button);
+    DeleteGraph(A_button);
+    DeleteGraph(gameOver_back);
 }
 
 void GameUI::Initialize(Enemy& enemy,Player& player)
@@ -29,6 +48,7 @@ void GameUI::Initialize(Enemy& enemy,Player& player)
     alpha_front = 0;
     alpha_bright = 0;
     alpha_UI = 0;
+    alpha_Box = 0;
     shake = 0;
 }
 
@@ -43,6 +63,11 @@ void GameUI::Update(Enemy& enemy, Player& player,bool isChange)
         {
             alpha_UI += 2;
         }
+
+        if (alpha_Box < 75)
+        {
+            alpha_Box += 2;
+        }
     }
 }
 
@@ -51,6 +76,12 @@ void GameUI::Update(Enemy& enemy, Player& player,bool isChange)
 /// </summary>
 void GameUI::Draw()
 {
+
+    SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha_Box);
+    DrawBox(1405, 70, 1550, 180, GetColor(0, 0, 0), true);
+
+    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
     SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha_UI);
     DrawExtendGraph(300 + shake, 660 + shake,1300 + shake, 720 + shake, HPBar_back, true);
     DrawExtendGraph(300 + shake, 660 + shake, drawHP_enemy + 300 + shake, 720 + shake, enemyHPBar_front, true);
@@ -58,7 +89,7 @@ void GameUI::Draw()
     DrawExtendGraph(50, 50, 850, 690, playerHPBar_back, true);
     DrawExtendGraph(163, 50, drawHP_player + 163, 690, playerHPBar_front, true);
     DrawGraph(1400, 65, A_button, true);
-    DrawGraph(1400, 100, X_button, true);
+    DrawGraph(1400, 120, X_button, true);
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
     WhenGameOver_Draw();
     //DrawGraph(0, 0, playerHPBar_back,true);

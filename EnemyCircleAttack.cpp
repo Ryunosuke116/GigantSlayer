@@ -1,7 +1,8 @@
-#include "DxLib.h"
-#include"EffekseerForDXLib.h"
+#include <iostream>
 #include <vector>
 #include <cmath>
+#include "DxLib.h"
+#include"EffekseerForDXLib.h"
 #include "Effect.h"
 #include "EnemyCalculation.h"
 #include "EnemyCircleAttack.h"
@@ -59,12 +60,13 @@ void EnemyCircleAttack::Initialize()
 
 	for (auto& CircleAttack : circleAttacks)
 	{
-		circleAttack.addPosition = VGet(0, 0, 0);
-		circleAttack.position = VGet(bulletPosition.x, bulletPosition.y, bulletPosition.z);
-		circleAttack.effectPosition = VGet(bulletPosition.x, bulletPosition.y - 10, bulletPosition.z);
+		CircleAttack.addPosition = VGet(0, 0, 0);
+		CircleAttack.position = VGet(bulletPosition.x, bulletPosition.y, bulletPosition.z);
+		CircleAttack.effectPosition = VGet(bulletPosition.x, bulletPosition.y - 10, bulletPosition.z);
 
-		EnemyCalculation::CircumferenceCalculation(circleAttack.addPosition, 0, 0, stack, speed);
+		EnemyCalculation::CircumferenceCalculation(CircleAttack.addPosition, 0, 0, stack, speed);
 		stack += 5;
+		CircleAttack.effect->StopEffect();
 	}
 }
 
@@ -132,14 +134,6 @@ void EnemyCircleAttack::Draw()
 	
 }
 
-/// <summary>
-/// 座標の保存
-/// </summary>
-/// <param name="position"></param>
-void EnemyCircleAttack::SetPosition(const VECTOR position)
-{
-	bulletPosition = VGet(position.x, position.y, position.z);
-}
 
 /// <summary>
 /// 座標をリセット

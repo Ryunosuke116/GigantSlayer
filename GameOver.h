@@ -1,7 +1,5 @@
 #pragma once
-#include "DxLib.h"
-#include "input.h"
-#include "BaseScene.h"
+
 
 class GameOver : public BaseScene
 {
@@ -18,8 +16,13 @@ private:
 
     int continue_font = NULL;
     int titleBack_font = NULL;
+    int gameOver_font;
+    int font_back;
+    int arrow;
     int select;
     float alpha;
+    float alpha_arrow;
+    float addAlpha_arrow;
     float addAlpha;
     Input* input = NULL;
 };

@@ -1,11 +1,13 @@
-#include"EffekseerForDXLib.h"
+#include <iostream>
 #include <vector>
 #include <cmath>
+#include "DxLib.h"
+#include "EffekseerForDXLib.h"
 #include "Effect.h"
-#include "Enemy.h"
 #include "object.h"
 #include "EnemyCalculation.h"
 #include "EnemyBreath.h"
+
 
 /// <summary>
 /// インスタンス化
@@ -24,6 +26,7 @@ EnemyBreath::EnemyBreath()
 	attackStack = 1;
 	isStopAdd = false;
 	isDirection = false;
+	isAttack = false;
 
 	for (int i = 0; i < breathNumber; i++)
 	{
@@ -69,6 +72,7 @@ void EnemyBreath::Initialize()
 		breath.position = VGet(formerPosition.x, formerPosition.y, formerPosition.z);
 		breath.effectPosition = VGet(formerPosition.x, formerPosition.y - 10, formerPosition.z);
 		breath.radius = 2;
+		breath.effect->StopEffect();
 	}
 
 	effectPosition = VGet(formerPosition.x, formerPosition.y, formerPosition.z - 30.0f);
@@ -78,6 +82,7 @@ void EnemyBreath::Initialize()
 
 	fixCount = 3;
 	isDirection = false;
+	isAttack = false;
 	attackNumber += breathNumber * 2;
 
 }
@@ -146,22 +151,7 @@ void EnemyBreath::Update()
 	//カウントに達した場合、攻撃終了
 	if (Count >= breathNumber + (breathNumber / 2))
 	{
-		addPosition_X = 0;
-		isStopAdd = false;
-		isDirection = false;
-		isAttack = false;
-		isEffect = false;
-		Count = 0;
-		attackStack = 0;
-		//座標をセット
-		ResetPosition(formerPosition);
-		
-		for (auto& breath : breaths)
-		{
-			breath.radius = 2;
-			breath.isStop = false;
-			breath.effect->StopEffect();
-		}
+		EndBreath();
 	}
 
 }
@@ -178,13 +168,24 @@ void EnemyBreath::Draw()
 
 }
 
-/// <summary>
-/// 座標の保存
-/// </summary>
-/// <param name="position"></param>
-void EnemyBreath::SetPosition(const VECTOR position)
+void EnemyBreath::EndBreath()
 {
-	formerPosition = VGet(position.x, position.y, position.z - 10.0f);
+	addPosition_X = 0;
+	isStopAdd = false;
+	isDirection = false;
+	isAttack = false;
+	isEffect = false;
+	Count = 0;
+	attackStack = 0;
+	//座標をセット
+	ResetPosition(formerPosition);
+
+	for (auto& breath : breaths)
+	{
+		breath.radius = 2;
+		breath.isStop = false;
+		breath.effect->StopEffect();
+	}
 }
 
 /// <summary>

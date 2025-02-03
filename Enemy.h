@@ -1,8 +1,8 @@
 #pragma once
-#include "EnemyBullet.h"
-#include "EnemyCircleAttack.h"
-#include"EnemyBreath.h"
 
+class EnemyBullet;
+class EnemyCircleAttack;
+class EnemyBreath;
 
 class Enemy
 {
@@ -11,12 +11,13 @@ public:
     ~Enemy();
 
     void Initialize();
-    void Update();
+    void Update(Calculation& calculation);
     void Draw();
     
+    void UpdateDirection();
     void SetIsPlayerAttackHit(const bool value) { isPlayerAttackHit = value; }
-    void ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
-        EnemyBreath& breath);
+    void ActionFlow(EnemyBullet bullet[], EnemyCircleAttack& circleAttack,
+        EnemyBreath& breath, Calculation& calculation);
     void StartUpdate();
     void ResetTime(){ standTime = 0; }
     
@@ -41,10 +42,10 @@ public:
     //////////////////////////////////////////
     void SetPosition(const VECTOR& getPosition) { playerPos = getPosition; }  
 
-    // インスタンス化
-    EnemyBullet* bullet = new EnemyBullet();
-    EnemyCircleAttack* circleAttack = new EnemyCircleAttack();
-    EnemyBreath* breath = new EnemyBreath();
+    
+    EnemyBullet* bullet[2] = { NULL };
+    EnemyCircleAttack* circleAttack = NULL;
+    EnemyBreath* breath = NULL;
     
 private:
     
@@ -57,7 +58,7 @@ private:
     int maxBulletNumber;                //最大攻撃回数
     int HP;
     
-    
+    float angle;
     float totalTime;                    //モーションの総再生時間
     float standTime;                    //待機時間
     float playTime;                     //現在の再生時間
@@ -66,16 +67,15 @@ private:
     bool isPlayerAttackHit;              //攻撃を当てられたか
     bool isKnockback;                   //のけぞったか
     bool isBulletNumber;                //何回攻撃するか
+    bool isBootBullet;
     VECTOR topPosition;                    //Enemyのポジション
     VECTOR bottomPosition;           //球のポジション
     VECTOR AttackSpherePosition;        //攻撃のポジション
     VECTOR bulletSpeed;                 //弾の速度
     VECTOR bulletPosition;              //弾のポジション
     VECTOR bulletMotionPosition;        //弾攻撃時のモデルポジション
-    VECTOR playerPos;                   //プレイヤーのポジション
-    float bulletPositionStack;          
-    float playerMoveSpeed;              //プレイヤーの速度
-    float bulletSpeed_Y;                //弾の縦に動く速度
+    VECTOR playerPos;                   //プレイヤーのポジション      
+    VECTOR direction;                   //方向
 
     static constexpr int knockback = 1;         //のけぞり
     static constexpr int jump = 4;              //ジャンプ  

@@ -1,9 +1,10 @@
-#include "DxLib.h"
-#include"EffekseerForDXLib.h"
 #include <vector>
+#include <time.h>
+#include "DxLib.h"
 #include "EnemyBullet.h"
 #include "EnemyCircleAttack.h"
 #include "EnemyBreath.h"
+#include "Calculation.h"
 #include "Enemy.h"
 
 /// <summary>
@@ -11,28 +12,47 @@
 /// </summary>
 Enemy::Enemy()
 {
-    bottomPosition = VGet(0, -15, 20);
-    topPosition = VGet(0, 0, 0);
-    AttackSpherePosition = VGet(0, 0, 0);
-    bulletSpeed = VGet(0, 0, 0);
-    bulletPosition = VGet(0, 0, 0);
-    playerPos = VGet(0, 0, 0);
-    bulletMotionPosition = VGet(0, 0, 0);
-    modelHandle = -1;
-    bulletPositionStack = 0;
-    addPlayTime = 0;
-    standTime = 0;
-    playerMoveSpeed = 0;
-    HP = 0;
-    bulletSpeed_Y = 0.95;
-    motionNum = 0;
-    isAttack = false;
-    isKnockback = false;
+    if (breath == NULL)
+    {
+        for (auto& bullets : bullet)
+        {
+            bullets = new EnemyBullet();
+        }
+        circleAttack = new EnemyCircleAttack();
+        breath = new EnemyBreath();
+        bottomPosition = VGet(0, -15, 20);
+        topPosition = VGet(0, 0, 0);
+        AttackSpherePosition = VGet(0, 0, 0);
+        bulletSpeed = VGet(0, 0, 0);
+        bulletPosition = VGet(0, 0, 0);
+        playerPos = VGet(0, 0, 0);
+        bulletMotionPosition = VGet(0, 0, 0);
+        direction = VGet(0, 0, 0);
+        modelHandle = -1;
+        addPlayTime = 0;
+        standTime = 0;
+        HP = 0;
+        motionNum = 0;
+        angle = 0;
+        totalTime = 0;
+        playTime = 0;
+        maxBulletNumber = 0;
+        isPlayerAttackHit = 0;
+        isBulletNumber = 0;
+        bulletNumber = 0;
+        attachIndex = 0;
+
+        orderNumber = 0;
+        isAttack = false;
+        isKnockback = false;
+        isBootBullet = false;
+    }
+
 }
 
 Enemy::~Enemy()
 {
-
+    MV1DeleteModel(modelHandle);
 }
 
 /// <summary>
@@ -45,36 +65,55 @@ void Enemy::Initialize()
     topPosition = VGet(bottomPosition.x, bottomPosition.y + 50.0f, bottomPosition.z);
     bulletPosition = VGet(bottomPosition.x, bottomPosition.y + 20, bottomPosition.z);
     addPlayTime = 0.4f;
-    //モデル読み込み
-    modelHandle = MV1LoadModel("material/mv1/mutant_1031.mv1");
+    standTime = 0;
+    orderNumber = 0;
+    angle = 0;
+    isAttack = false;
+    isKnockback = false;
 
-    //モデルの大きさ調整
-    MV1SetScale(modelHandle, VGet(0.4f, 0.4f, 0.4f));
+    if (modelHandle == -1)
+    {
+        //モデル読み込み
+        modelHandle = MV1LoadModel("material/mv1/mutant_1031.mv1");
+        //モデルの大きさ調整
+        MV1SetScale(modelHandle, VGet(0.4f, 0.4f, 0.4f));
+    }
 
     // プレイヤーのモデルの座標を更新する
     MV1SetPosition(modelHandle, bottomPosition);
-    bullet->Initialize(bottomPosition);
-    circleAttack->SetPosition(bullet->GetPosition());
-    breath->SetPosition(bullet->GetPosition());
+    for (auto& bullets : bullet)
+    {
+        bullets->Initialize(bottomPosition);
+    }
+    circleAttack->SetPosition(bottomPosition);
+    breath->SetPosition(bullet[0]->GetPosition());
     circleAttack->Initialize();
     breath->Initialize();
 
+    MV1SetRotationXYZ(modelHandle, VGet(0, 0, 0));
+
     //待機モーション読み込み
     ChangeMotion(stand);
-
+    
 }
 
 /// <summary>
 /// 更新
 /// </summary>
-void Enemy::Update()
+void Enemy::Update(Calculation& calculation)
 {
     topPosition = VGet(bottomPosition.x, bottomPosition.y + 50.0f, bottomPosition.z);
 
+    UpdateDirection();
+
+    if (motionNum != breathAttack)
+    {
+        calculation.UpdateAngle(direction, angle, modelHandle);
+    }
    
     if (CheckHitKey(KEY_INPUT_1))
     {
-        breath->isAttack = true;
+        ChangeMotion(breathAttack);
     }
     if (CheckHitKey(KEY_INPUT_2))
     {
@@ -83,11 +122,14 @@ void Enemy::Update()
     }
 
     //攻撃の更新
-    bullet->Update(bottomPosition, *circleAttack);
+    for (auto& bullets : bullet)
+    {
+        bullets->Update(bottomPosition, *circleAttack);
+    }
     circleAttack->Update();
     breath->Update();
 
-    if (CheckHitKey(KEY_INPUT_3) && motionNum != bulletAttack)
+    if (CheckHitKey(KEY_INPUT_3) && (motionNum != bulletAttack))
     {
         ChangeMotion(bulletAttack);
     }
@@ -97,7 +139,15 @@ void Enemy::Update()
         ChangeMotion(breathAttack);
     }
 
-    ActionFlow(*bullet, *circleAttack, *breath);
+    ActionFlow(*bullet, *circleAttack, *breath, calculation);
+    if (bullet[0]->GetIsAttack())
+    {
+        isBootBullet = true;
+    }
+    else
+    {
+        isBootBullet = false;
+    }
     //モーション更新
     MotionUpdate();
 
@@ -122,13 +172,38 @@ void Enemy::Draw()
 {
     MV1DrawModel(modelHandle);
 
-    DrawCapsule3D(bottomPosition, topPosition, 15, 16, GetColor(0, 0, 0), GetColor(255, 255, 255), false);
-    bullet->Draw();
+   // DrawCapsule3D(bottomPosition, topPosition, 15, 16, GetColor(0, 0, 0), GetColor(255, 255, 255), false);
+    for (auto& bullets : bullet)
+    {
+        bullets->Draw();
+    }
     circleAttack->Draw();
     breath->Draw();
 
     printfDx("enemy.HP %d\n", HP);
+    VECTOR a = MV1GetRotationXYZ(modelHandle);
+    printfDx("enemy.angle.x %f\n", a.x);
+    printfDx("enemy.angle.y %f\n", a.y);
+    printfDx("enemy.angle.z %f\n", a.z);
+}
 
+void Enemy::UpdateDirection()
+{
+    if (motionNum != breathAttack)
+    {
+        direction = VSub(VGet(0, 0, 0), bottomPosition);
+    }
+    else
+    {
+        direction = VSub(playerPos, bottomPosition);
+    }
+    direction.y = 0;
+
+    if (VSize(direction) != 0)
+    {
+        direction = VNorm(direction);
+    }
+    
 }
 
 /// <summary>
@@ -208,7 +283,7 @@ void Enemy::MotionUpdate()
         }
         else
         {
-            playTime += 0.1f;
+            playTime += 0.02f;
         }
     }
 
@@ -248,8 +323,8 @@ void Enemy::MotionUpdate()
 /// <summary>
 /// 行動の流れ
 /// </summary>
-void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
-                       EnemyBreath& breath)
+void Enemy::ActionFlow(EnemyBullet bullet[], EnemyCircleAttack& circleAttack,
+                       EnemyBreath& breath, Calculation& calculation)
 {   
     //待機中50fごとに行動する
     if (motionNum == stand)
@@ -260,7 +335,7 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
             if (playTime == 0)
             {
                 standTime = 0;
-                Order(bullet,breath);
+                Order(bullet[0], breath);
 
                 if (isBulletNumber)
                 {
@@ -276,24 +351,48 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
         //攻撃を放つモーションに入った時攻撃する
         if (playTime >= 45.0f && !isAttack)
         {
-            bullet.SetIsAttack(true);
+            if (!isBootBullet)
+            {
+                bullet[0].SetIsAttack(true);
+            }
+            else
+            {
+                bullet[1].SetIsAttack(true);
+            }
             isAttack = true;
            
         }
         else if(!isAttack)
         {
-            bullet.SetPosition(topPosition);
-            bullet.SetIsSetUpMotion(true);
+            if (!isBootBullet)
+            {
+                bullet[0].SetPosition(topPosition);
+                bullet[0].SetIsSetUpMotion(true);
+            }
+            else
+            {
+                bullet[1].SetPosition(topPosition);
+                bullet[1].SetIsSetUpMotion(true);
+            }
         }
     }
     //のけぞり
     if (isPlayerAttackHit)
     {
         HP -= 20;
-        if (!bullet.GetIsAttack())
+        if (!bullet[0].GetIsAttack())
         {
-            bullet.ResetAttack(bottomPosition);
+            bullet[0].ResetAttack(bottomPosition);
         }
+        if (!bullet[1].GetIsAttack())
+        {
+            bullet[1].ResetAttack(bottomPosition);
+        }
+        if (breath.GetIsAttack())
+        {
+            breath.EndBreath();
+        }
+
         ChangeMotion(knockback);
         playTime = 19.0f;
         isPlayerAttackHit = false;
@@ -304,8 +403,11 @@ void Enemy::ActionFlow(EnemyBullet& bullet, EnemyCircleAttack& circleAttack,
         if (playTime >= 52.0f && !isAttack)
         {
             breath.SetIsAttack(true);
-            isAttack = true;
-            
+            isAttack = true;   
+        }
+        else if(!isAttack)
+        {
+            calculation.UpdateAngle(direction, angle, modelHandle);
         }
     }
 }

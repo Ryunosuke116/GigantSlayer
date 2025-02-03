@@ -1,5 +1,4 @@
-#include <cassert>
-#include "SceneManager.h"
+#include "Include.h"
 
 SceneManager::SceneManager():nowScene{nullptr}{}
 

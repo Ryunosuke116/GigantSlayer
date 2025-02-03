@@ -1,8 +1,4 @@
 #pragma once
-#include "DxLib.h"
-#include"EffekseerForDXLib.h"
-#include "Effect.h"
-#include <vector>
 
 class Map
 {

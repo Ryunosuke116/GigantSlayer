@@ -1,9 +1,5 @@
 #pragma once
-#include "DxLib.h"
-#include"Map.h"
-#include "Player.h"
-#include "Object.h"
-#include "Enemy.h"
+
 
 class Common
 {

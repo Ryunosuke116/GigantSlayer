@@ -1,7 +1,5 @@
 #pragma once
-#include "DxLib.h"
-#include "Enemy.h"
-#include "Player.h"
+
 
 class GameUI
 {
@@ -24,6 +22,7 @@ private:
     int alpha_front;
     int alpha_bright;
     int alpha_UI;
+    int alpha_Box;
     double shake;
     float oldHP_enemy;
     float oldHP_player;

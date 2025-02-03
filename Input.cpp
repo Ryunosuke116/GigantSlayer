@@ -1,5 +1,4 @@
-#include "DxLib.h"
-#include "Input.h"
+#include "Include.h"
 
 /// <summary>
 /// コンストラクタ

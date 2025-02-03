@@ -1,9 +1,5 @@
 #pragma once
-#include "Object.h"
-#include "Player.h"
-#include "Calculation.h"
-#include <iostream>
-#include <array>
+
 
 class Object;
 

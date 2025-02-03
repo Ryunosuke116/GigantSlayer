@@ -1,8 +1,5 @@
-#include "Input.h"
-#include "Player.h" 
-#include"Map.h"
-#include <iostream>
-#include <array>
+#include "Include.h"
+
 
 /// <summary>
 /// インスタンス化
@@ -57,7 +54,8 @@ Player::Player()
 /// </summary>
 Player::~Player()
 {
-
+    MV1DeleteModel(modelHandle);
+    DeleteGraph(shadowHandle);
 }
 
 /// <summary>
@@ -77,6 +75,17 @@ void Player::Initialize()
     testPosition = VGet(0, 0, 0);
     isAttackHold = false;
     isDisplay = true;
+    isHitEnemyAttack = false;
+    isMove = false;
+    isJump = false;
+    isOnGround = false;
+    isPushKey = false;
+    isEffect = false;
+    isChangeMotion = false;
+    isPlayTime = false;
+    isHitObject[4] = {false};
+    isObjectHitEnemy = false;
+    isAttackHold = false;
 
     //待機モーション読み込み
     ChangeMotion(stand);
@@ -102,13 +111,22 @@ void Player::Update(Calculation& calculation,
     {
         HP = 0;
     }
+
+    if (HP <= 0 && motionNum != die)
+    {
+        ChangeMotion(die);
+        playTime = 5.0f;
+    }
+
     VECTOR	moveVec = VGet(0, 0, 0);
 
     //playerの向き調整
     UpdateAngle();
 
     //攻撃をされたときは動かせない
-    if (!(motionNum == down || motionNum == standUp || motionNum == pickUp || motionNum == pickUp_Hold))
+    if (!(motionNum == down || motionNum == standUp ||
+        motionNum == pickUp || motionNum == pickUp_Hold || 
+        motionNum == die))
     {
         //移動
         Move(input, moveVec);
@@ -427,7 +445,8 @@ void Player::PickUpObject(Object& object, const Input& input)
 {
 
     //オブジェクトとプレイヤーが当たった場合消す
-    if (input.GetNowFrameInput() & PAD_INPUT_C || CheckHitKey(KEY_INPUT_5))
+    if ((input.GetNowFrameInput() & PAD_INPUT_C || CheckHitKey(KEY_INPUT_5)) &&
+        !isAttackHold)
     {
         isAttackHold = true;
         ChangeMotion(pickUp_Hold);
@@ -524,11 +543,14 @@ bool Player::ObjectHitCheck(const VECTOR objectPosition,
 void Player::EnemyHitCheck(Enemy& enemy,Calculation& calculation)
 {
     //カプセルと球
-    VECTOR closePosition = calculation.CapsuleHitConfirmation(topSpherePosition, bottomSpherePosition,
-        enemy.bullet->GetPosition(), radius, enemy.bullet->GetRadius());
+    for (auto& bullet : enemy.bullet)
+    {
+        VECTOR closePosition = calculation.CapsuleHitConfirmation(topSpherePosition, bottomSpherePosition,
+           bullet->GetPosition(), radius,bullet->GetRadius());
 
-    //プレイヤーと敵の攻撃が接触したか
-    isHitEnemyAttack = calculation.HitConfirmation(closePosition, enemy.bullet->GetPosition(), radius, enemy.bullet->GetRadius());
+        //プレイヤーと敵の攻撃が接触したか
+        isHitEnemyAttack = calculation.HitConfirmation(closePosition,bullet->GetPosition(), radius,bullet->GetRadius());
+    }
 
     //サークル攻撃の当たり判定
     if (enemy.circleAttack->isAttack)
@@ -548,7 +570,7 @@ void Player::EnemyHitCheck(Enemy& enemy,Calculation& calculation)
     }
 
     //ブレスとの当たり判定
-    if (enemy.breath->isAttack)
+    if (enemy.breath->GetIsAttack())
     {
         for (auto& breath : enemy.breath->getBreath())
         {
@@ -643,7 +665,6 @@ void Player::MotionUpdate()
     {
         playTime += 1.2f;
     }
-
     //pickUpモーション時
     else if (motionNum == pickUp || motionNum == pickUp_Hold)
     {
@@ -669,6 +690,14 @@ void Player::MotionUpdate()
         if (playTime >= 59.0f)
         {
             playTime = 0;
+        }
+    }
+    else if (motionNum == die)
+    {
+        playTime += 0.6f;
+        if (playTime >= totalTime)
+        {
+            playTime = totalTime;
         }
     }
     else
@@ -702,22 +731,13 @@ void Player::MotionUpdate()
     }
 
     //playTimeがtotalTimeを超えたらリセットする
-    if (playTime >= totalTime)
+    if (playTime >= totalTime && motionNum != die)
     {
         playTime = 0;
     }
 
     // 再生時間をセットする
     MV1SetAttachAnimTime(modelHandle, attachIndex, playTime);
-}
-
-/// <summary>
-/// 座標の取得
-/// </summary>
-/// <param name="setPosition"></param>
-void Player::GetPosition(VECTOR& setPosition)
-{
-    setPosition = VGet(position.x, position.y, position.z);
 }
 
 
@@ -744,6 +764,7 @@ void Player::StartUpdate()
         targetMoveDirection = VNorm(moveVec);
 
         moveVec = VScale(targetMoveDirection, MoveSpeed);
+
         if (stock)
         {
             moveVec = VScale(targetMoveDirection, slowMoveSpeed);

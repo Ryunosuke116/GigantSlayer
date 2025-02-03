@@ -1,6 +1,4 @@
-#include "Game.h"
-#include <iostream>
-#include <array>
+#include "Include.h"
 
 /// <summary>
 /// インスタンス化
@@ -36,6 +34,20 @@ Game::~Game()
 {
     delete(input);
     delete(player);
+    delete(effect);
+    delete(camera);
+    delete(map);
+    delete(calculation);
+    delete(enemyManager);
+    delete(enemy);
+    delete(common);
+    delete(gameUI);
+    delete(objectManager);
+    delete(blackOut);
+    for (auto& objects : object)
+    {
+        delete(objects);
+    }
 }
 
 /// <summary>
@@ -73,7 +85,10 @@ void Game::Update()
         (*objects).Update(*enemy, *calculation, *input);
     }
 
-    enemy->bullet->SetIsEmerge(false);
+    for (auto& bullet : enemy->bullet)
+    {
+       bullet->SetIsEmerge(false);
+    }
 
     if (!camera->GetIsChange())
     {
@@ -83,7 +98,7 @@ void Game::Update()
     }
     else
     {
-        enemy->Update();
+        enemy->Update(*calculation);
         player->Update(*calculation, object, *input, *enemy);
         camera->Update(player->GetPosition(), enemy->GetTopPosition());
     }
@@ -145,7 +160,7 @@ void Game::SceneChanger(Player& player, Enemy& enemy, Camera& camera, GameUI& ga
 
     if (gameUI.GetAlpha_bright() >= 500)
     {
-        ChangeScene("GameClear");
+        ChangeScene("GameOver");
     }
 
 }

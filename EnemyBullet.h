@@ -1,6 +1,8 @@
 #pragma once
-#include "Effect.h"
-#include "EnemyCircleAttack.h"
+
+class EnemyCircleAttack;
+class Effect;
+
 class EnemyBullet
 {
 private:
@@ -14,16 +16,10 @@ private:
     int effectPlayStack;        //エフェクト再生時間
     int positionStack;    //移動する量
     bool isAttack;
-    bool isPlayerMove;
-    bool isLeftMove;
-    bool isRightMove;
-    bool isTopMove;
-    bool isBottomMove;
     bool isEffect;          //エフェクトを出すか
     bool isEmerge;          //出現させるか
     bool isCircleBullet;    //サークル攻撃をするか
     bool isSetUpMotion;     //攻撃モーションに入ったか
-    float playerMoveSpeed;
     float bulletSpeed_Y;  
     float scale;
     Effect* effect = NULL;

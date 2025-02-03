@@ -1,7 +1,6 @@
 #pragma once
-#include "DxLib.h"
-#include <vector>
-#include "Enemy.h"
+
+class Enemy;
 
 class Camera
 {
@@ -15,6 +14,7 @@ private:
     bool flg;
     bool isDistance;
     bool isChangeUpdate;
+
 public:
 
     Camera();

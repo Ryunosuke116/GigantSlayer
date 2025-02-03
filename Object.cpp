@@ -1,9 +1,15 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
 #include "DxLib.h"
 #include"EffekseerForDXLib.h"
-#include <vector>
 #include "EnemyBullet.h"
+#include "EnemyCircleAttack.h"
+#include "EnemyBreath.h"
+#include "Calculation.h"
+#include "Enemy.h"
 #include "Input.h"
-#include <cmath>
+#include "Effect.h"
 #include "Object.h"
 
 /// <summary>
@@ -33,7 +39,7 @@ Object::Object()
 /// </summary>
 Object::~Object()
 {
-
+    DeleteGraph(graphHandle);
 }
 
 /// <summary>
@@ -56,6 +62,7 @@ void Object::Initialize(Enemy& enemy)
     isDrop = false;
     position = enemy.GetBottomPosition();
     addPosition = VGet(1, 0, 1);
+    effect->Initialize("material/TouhouStrategy/black.efkefc", 1.2f, position);
     effect->StopEffect();
 }
 
@@ -66,21 +73,25 @@ void Object::Initialize(Enemy& enemy)
 void Object::Update(Enemy& enemy, Calculation& calculation, const Input& input)
 {
     //敵の弾が落ちた時オブジェクトを生成
-    if (enemy.bullet->GetIsEmerge() && !isObject)
+    for (auto& bullets : enemy.bullet)
     {
-        position = enemy.bullet->GetFellPosition();
-        position.y += 5.0f;
-        position.y = 3;
-        enemy.bullet->SetIsEmerge(false);
-        isObject = true;
+        if (bullets->GetIsEmerge() && !isObject)
+        {
+            position = bullets->GetFellPosition();
+            position.y += 5.0f;
+            position.y = 3;
+            bullets->SetIsEmerge(false);
+            isObject = true;
+        }
     }
+
 
 
     if (isObject)
     {
 
         //ブレスが当たったらつかめるようにする
-        if (enemy.breath->isAttack && !isHitBreath)
+        if (enemy.breath->GetIsAttack() && !isHitBreath)
         {
             for (auto& breath : enemy.breath->getBreath())
             {

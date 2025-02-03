@@ -1,7 +1,4 @@
-#include "DxLib.h"
-#include"EffekseerForDXLib.h"
-#include <vector>
-#include "Map.h"
+#include "Include.h"
 
 /// <summary>
 /// インスタンス化
@@ -23,7 +20,8 @@ Map::Map()
 /// </summary>
 Map::~Map()
 {
-
+    MV1DeleteModel(backGroundHandle);
+    MV1DeleteModel(fieldHandle);
 }
 
 /// <summary>

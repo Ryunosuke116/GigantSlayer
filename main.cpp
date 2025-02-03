@@ -1,13 +1,4 @@
-#include "DxLib.h"
-#include"EffekseerForDXLib.h"
-#include<vector>
-#include <iostream>
-#include "Game.h"
-#include "GameClear.h"
-#include "Title.h"
-#include "GameOver.h"
-#include "BaseScene.h"
-#include "SceneManager.h"
+#include "Include.h"
 
 //基本設定
 int WINAPI WinMain(HINSTANCE hInstance,
@@ -17,7 +8,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 {
 
     // 画面モードのセット
-    ChangeWindowMode(FALSE);
+    ChangeWindowMode(TRUE);
     SetGraphMode(1600, 900, 16);
 
     // DirectX11を使用するようにする。(DirectX9も可、一部機能不可)

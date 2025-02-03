@@ -1,8 +1,13 @@
-#include "Common.h"
+#include "Include.h"
 
 Common::Common()
 {
     shadowHandle = LoadGraph("material/Shadow.tga");
+}
+
+Common::~Common()
+{
+    DeleteGraph(shadowHandle);
 }
 
 void Common::Update(Player& player, std::array<Object*, 4> objects)
@@ -52,7 +57,10 @@ void Common::MovableCalculation(VECTOR& position)
 void Common::Draw(Map& map, const VECTOR& PlayerPosition, const Enemy& enemy)
 {
     DrawShadow(map, PlayerPosition);
-    DrawShadow(map, enemy.bullet->GetPosition());
+    for (auto& bullet : enemy.bullet)
+    {
+        DrawShadow(map, bullet->GetPosition());
+    }
     DrawShadow(map, enemy.GetBottomPosition());
 }
 

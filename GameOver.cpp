@@ -1,6 +1,5 @@
-#include "GameOver.h"
-#include <iostream>
-#include <array>
+#include "Include.h"
+
 
 /// <summary>
 /// インスタンス化
@@ -11,6 +10,9 @@ GameOver::GameOver(SceneManager& manager) : BaseScene{ manager }
     {
         continue_font = LoadGraph("material/continue_02.png");
         titleBack_font = LoadGraph("material/BackToTitle.png");
+        arrow = LoadGraph("material/white_arrow_01.png");
+        gameOver_font = LoadGraph("material/GAMEOVER.png");
+        font_back = LoadGraph("material/lose_backGround.png");
         input = new Input();
     }
     select = 0;
@@ -31,6 +33,8 @@ void GameOver::Initialize()
 {
     select = 0;
     alpha = 0;
+    addAlpha_arrow = 1;
+    alpha_arrow = 0;
     addAlpha = 4.5f;
 }
 
@@ -39,6 +43,18 @@ void GameOver::Initialize()
 /// </summary>
 void GameOver::Update()
 {
+
+    if (alpha_arrow > 50)
+    {
+        addAlpha_arrow = -2;
+    }
+    else if (alpha_arrow < 0)
+    {
+        addAlpha_arrow = 1;
+    }
+
+    alpha_arrow += addAlpha_arrow;
+
     if (alpha > 255 || alpha < 0)
     {
         addAlpha = -addAlpha;
@@ -84,17 +100,22 @@ void GameOver::Update()
 /// </summary>
 void GameOver::Draw()
 {
+    DrawGraph(0, 220, font_back, true);
+    DrawGraph(300, 200, gameOver_font, true);
+
     if (select == 0)
     {
         SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
         DrawGraph(400, 500, continue_font, true);
         SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
+        DrawGraph(250 - (alpha_arrow / 2), 500, arrow, true);
         DrawGraph(300, 600, titleBack_font, true);
     }
     else if (select == 1)
     {
         DrawGraph(400, 500, continue_font, true);
+        DrawGraph(150 - (alpha_arrow / 2), 600, arrow, true);
 
         SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
         DrawGraph(300, 600, titleBack_font, true);

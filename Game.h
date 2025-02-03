@@ -1,25 +1,6 @@
 #pragma once
 
-#include "Camera.h"
-#include"Effect.h"
-#include "Enemy.h"
-#include"Object.h"
-#include "Input.h"
-#include "Player.h"
-#include "Game.h"
-#include "GameClear.h"
-#include "Title.h"
-#include "BaseScene.h"
-#include "SceneManager.h"
-#include "Map.h"
-#include "Calculation.h"
-#include "ObjectManager.h"
-#include "EnemyManager.h"
-#include"Common.h"
-#include"GameUI.h"
-#include"BlackOut.h"
-#include <iostream>
-#include <array>
+
 
 class Game : public BaseScene
 {

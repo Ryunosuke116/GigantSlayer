@@ -1,9 +1,5 @@
 #pragma once
 
-#include"BaseScene.h"
-#include "Input.h"
-#include "Camera.h"
-#include "BlackOut.h"
 
 class Title :public BaseScene
 {
@@ -17,11 +13,13 @@ public:
     void Draw();
 private:
     int titleHandle;
+    int movieHandle;
     int backGroundHandle;
     int start_font;
     int alpha;
     int addAlpha;
     int alpha_bright;
+    int font_back;
     bool isPush;
     Camera* camera = NULL;
     Input* input = NULL;

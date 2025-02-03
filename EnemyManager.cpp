@@ -1,3 +1,13 @@
+#include <iostream>
+#include <vector>
+#include "DxLib.h"
+#include"EffekseerForDXLib.h"
+#include "Player.h"
+#include "EnemyBullet.h"
+#include "EnemyCircleAttack.h"
+#include "EnemyBreath.h"
+#include "Calculation.h"
+#include "Enemy.h"
 #include "EnemyManager.h"
 
 /// <summary>
@@ -8,8 +18,11 @@
 void EnemyManager::GetPlayerPos(Player& player, Enemy& enemy)
 {
     VECTOR pos = VGet(0, 0, 0);
-    player.GetPosition(pos);
-    enemy.bullet->SetPlayerPosition(pos);
+    pos = player.GetPosition();
+    for (auto& bullet : enemy.bullet)
+    {
+        bullet->SetPlayerPosition(pos);
+    }
 }
 
 

@@ -1,11 +1,9 @@
 #pragma once
-#include "DxLib.h"
-#include"EffekseerForDXLib.h"
-#include <vector>
-#include "Calculation.h"
-#include "Effect.h"
-#include "Input.h"
-#include "Enemy.h"
+
+class Enemy;
+class Calculation;
+class Input;
+class Effect;
 
 class Object
 {

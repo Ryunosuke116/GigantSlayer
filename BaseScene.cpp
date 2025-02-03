@@ -1,7 +1,4 @@
-#include "Game.h"
-#include "GameClear.h"
-#include "Title.h"
-#include "BaseScene.h"
+#include "Include.h"
 
 /// <summary>
 /// インスタンス化

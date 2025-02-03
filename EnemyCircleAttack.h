@@ -1,7 +1,4 @@
 #pragma once
-#include "Effect.h"
-#include <iostream>
-#include <vector>
 
 class EnemyCircleAttack
 {
@@ -34,8 +31,7 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
-	void SetPosition(const VECTOR position);
-	void SetEnemyPosition(const VECTOR position);
+	void SetPosition(const VECTOR position) { bulletPosition = VGet(position.x, position.y, position.z); }
 	void ResetPosition(const VECTOR position);
 	float GetRadius() { return radius; }
 	std::vector<CircleAttack> circleAttacks;

@@ -1,7 +1,4 @@
-#include "DxLib.h"
-#include"EffekseerForDXLib.h"
-#include <vector>
-#include "Effect.h"
+#include "Include.h"
 
 /// <summary>
 /// インスタンス

@@ -1,7 +1,6 @@
 #pragma once
-#include "Effect.h"
-#include <iostream>
-#include <vector>
+
+class Effect;
 
 class EnemyBreath
 {
@@ -31,6 +30,8 @@ private:
 	bool isStopAdd;				//加算するかどうか
 	bool isDirection;			//向きを変えるか
 	bool isEffect;
+	bool isAttack;
+	std::vector<Breath> breaths;
  
 	static constexpr int breathNumber = 126;
 	static constexpr float speed = 2.0f;
@@ -43,14 +44,22 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
+	void EndBreath();
 	void Rotation(VECTOR playerPos, VECTOR enemyPos);
-	void SetPosition(const VECTOR position);
 	void Direction(VECTOR& addPosition);
 	void ResetPosition(const VECTOR position);
-	void SetIsAttack(const bool value) { isAttack = value; }
-	std::vector<Breath> breaths;
-	bool isAttack;
 	int Count;
+
+	//------------------------------------------------------------//
+	// ゲッター
+	//-----------------------------------------------------------//
+	bool GetIsAttack() { return isAttack; }
+
+	//-------------------------------------------------------------//
+	// セッター
+	//-------------------------------------------------------------//
+	void SetIsAttack(const bool value) { isAttack = value; }
+	void SetPosition(const VECTOR position) { formerPosition = VGet(position.x, position.y, position.z - 10.0f); }
 	
 	const std::vector<Breath>& getBreath() const
 	{

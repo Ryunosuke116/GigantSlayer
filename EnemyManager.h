@@ -1,9 +1,7 @@
 #pragma once
-#include "DxLib.h"
-#include"EffekseerForDXLib.h"
-#include <vector>
-#include "Player.h"
-#include "Enemy.h"
+
+class Enemy;
+class Player;
 
 class EnemyManager
 {
