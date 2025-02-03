@@ -30,7 +30,7 @@ Enemy::Enemy()
         direction = VGet(0, 0, 0);
         modelHandle = -1;
         addPlayTime = 0;
-        standTime = 0;
+        standTime_now = 0;
         HP = 0;
         motionNum = 0;
         angle = 0;
@@ -45,6 +45,7 @@ Enemy::Enemy()
         orderNumber = 0;
         isAttack = false;
         isKnockback = false;
+        isAnger = false;
         isBootBullet = false;
     }
 
@@ -65,11 +66,14 @@ void Enemy::Initialize()
     topPosition = VGet(bottomPosition.x, bottomPosition.y + 50.0f, bottomPosition.z);
     bulletPosition = VGet(bottomPosition.x, bottomPosition.y + 20, bottomPosition.z);
     addPlayTime = 0.4f;
-    standTime = 0;
+    standTime_now = 0;
     orderNumber = 0;
     angle = 0;
     isAttack = false;
     isKnockback = false;
+    isAnger = false;
+    isBootBullet = false;
+    
 
     if (modelHandle == -1)
     {
@@ -162,6 +166,12 @@ void Enemy::Update(Calculation& calculation)
             bottomPosition.y + 3.5f, bottomPosition.z);
 
         MV1SetPosition(modelHandle, bulletMotionPosition);
+    }
+
+    //HPÇ™àÍíËà»â∫Ç…Ç»ÇÈÇ∆çsìÆïœâª
+    if (HP < 50)
+    {
+        isAnger = true;
     }
 }
 
@@ -327,19 +337,42 @@ void Enemy::ActionFlow(EnemyBullet bullet[], EnemyCircleAttack& circleAttack,
                        EnemyBreath& breath, Calculation& calculation)
 {   
     //ë“ã@íÜ50fÇ≤Ç∆Ç…çsìÆÇ∑ÇÈ
-    if (motionNum == stand)
+    if (!isAnger)
     {
-        standTime++;
-        if (standTime >= 50.0f)
+        if (motionNum == stand)
         {
-            if (playTime == 0)
+            standTime_now++;
+            if (standTime_now >= standTime)
             {
-                standTime = 0;
-                Order(bullet[0], breath);
-
-                if (isBulletNumber)
+                if (playTime == 0)
                 {
-                    standTime = 50.0f;
+                    standTime_now = 0;
+                    Order(bullet[0], breath);
+
+                    if (isBulletNumber)
+                    {
+                        standTime_now = standTime;
+                    }
+                }
+            }
+        }
+    }
+    else if (isAnger)
+    {
+        if (motionNum == stand)
+        {
+            standTime_now++;
+            if (standTime_now >= standTime_anger)
+            {
+                if (playTime == 0)
+                {
+                    standTime_now = 0;
+                    Order(bullet[0], breath);
+
+                    if (isBulletNumber)
+                    {
+                        standTime_now = standTime_anger;
+                    }
                 }
             }
         }
@@ -466,8 +499,8 @@ void Enemy::StartUpdate()
 {
     MotionUpdate();
 
-    standTime++;
-    if (standTime == 190)
+    standTime_now++;
+    if (standTime_now == 190)
     {
         ChangeMotion(breathAttack);
     }
