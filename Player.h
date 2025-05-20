@@ -63,6 +63,7 @@ private:
     int motionNumber;           //モーション番号
     int HpHandle;      
     int HP;
+    int die_SE;
 
     float currentJumpPower;		// Ｙ軸方向の速度
     float totalTime;            //モーションの総再生時間
@@ -84,6 +85,10 @@ private:
     bool isAttackHold;              //攻撃を保持しているか
     bool isInvincible;              //無敵か
     bool isDisplay;                 //表示するか
+    bool isDown;
+    bool isAntiTouch;
+    bool isDamege;                  //ダメージを受けたか
+    bool isPush_button;
 
 
 public:
@@ -98,7 +103,6 @@ public:
     void StartUpdate();
     void Draw(const Map& map);
     void UpdateAngle();
-    void Attack(const Input& input);
     void AttackHitCheck(Enemy& enemy, Calculation& calculation);
     void Move(const Input& input, VECTOR& moveVec);
     void Jump(const Input& input, VECTOR& moveVec);
@@ -107,6 +111,7 @@ public:
     bool ObjectHitCheck(const VECTOR objectPosition,
         const float radius, Calculation& calculation);
     void Down();
+    void FallDown();
     void PickUpObject(Object& object, const Input& input);
     ///////////////////////////////////////////////
     //モーション関連

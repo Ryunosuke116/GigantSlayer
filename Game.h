@@ -16,6 +16,12 @@ public:
 private:
     static constexpr int objectNumber = 4;      //オブジェクトの数
     int alpha;
+    int BGM;
+    int wind_SE;
+    int shine_SE;
+    bool isPlayBGM;
+    bool isPlaySE;
+    bool isPlaySE_shine;
     //定義
     Input* input = NULL;
     Effect* effect = NULL;

@@ -21,7 +21,7 @@ private:
 	bool is; 
 	bool isSetPosition;
 
-	static constexpr float speed = 1.5f;
+	static constexpr float speed = 1.0f;
 	static constexpr float radius = 2;
 public:
 

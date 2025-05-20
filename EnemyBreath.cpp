@@ -48,6 +48,7 @@ EnemyBreath::EnemyBreath()
 		breaths.push_back(breath);
 	}
 
+	SEHandle = LoadSoundMem("material/SE/breath.mp3");
 
 }
 
@@ -102,6 +103,7 @@ void EnemyBreath::Update()
 		{
 			//座標をセット
 			ResetPosition(formerPosition);
+			PlaySoundMem(SEHandle, DX_PLAYTYPE_BACK);
 		}
 
 		int stackCount = 0;	

@@ -20,10 +20,15 @@ Game::Game(SceneManager& manager) : BaseScene{ manager }
             objects = new Object();
         }
         enemy = new Enemy();
-        common = new Common();
+        common = new Common("material/Shadow.tga");
         gameUI = new GameUI();
         objectManager = new ObjectManager();
         blackOut = new BlackOut();
+        BGM = LoadSoundMem("material/BGM/maou_game_lastboss03.mp3");
+        wind_SE = LoadSoundMem("material/SE/wind-artificial-18750.mp3");
+        shine_SE = LoadSoundMem("material/SE/shine.mp3");
+        ChangeVolumeSoundMem(255, wind_SE);
+        ChangeVolumeSoundMem(125, BGM);
     }
 }
 
@@ -48,6 +53,9 @@ Game::~Game()
     {
         delete(objects);
     }
+    DeleteSoundMem(BGM);
+    DeleteSoundMem(wind_SE);
+    DeleteSoundMem(shine_SE);
 }
 
 /// <summary>
@@ -68,6 +76,9 @@ void Game::Initialize()
         (*objects).Initialize(*enemy);
     }
     alpha = 0;
+    isPlayBGM = false;
+    isPlaySE = false;
+    isPlaySE_shine = false;
 }
 
 /// <summary>
@@ -92,12 +103,23 @@ void Game::Update()
 
     if (!camera->GetIsChange())
     {
+        if (!isPlaySE)
+        {
+            PlaySoundMem(wind_SE, DX_PLAYTYPE_BACK);
+            isPlaySE = true;
+        }
         enemy->StartUpdate();
         player->StartUpdate();
         camera->StartUpdate(*enemy);
     }
     else
     {
+        if (!isPlayBGM)
+        {
+            StopSoundMem(wind_SE);
+            PlaySoundMem(BGM, DX_PLAYTYPE_LOOP);    
+            isPlayBGM = true;
+        }
         enemy->Update(*calculation);
         player->Update(*calculation, object, *input, *enemy);
         camera->Update(player->GetPosition(), enemy->GetTopPosition());
@@ -132,10 +154,12 @@ void Game::Draw()
     common->Draw(*map,player->GetPosition(),*enemy);
     gameUI->Draw();
     blackOut->Draw();
-    SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
-    DrawBox(0, 0, 1600, 900, GetColor(255, 255, 255), TRUE); //” ‚Ì•`‰æ
-    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
     clsDx();
+
+    //” ‚Ì•`‰æ
+    SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
+    DrawBox(0, 0, 1600, 900, GetColor(255, 255, 255), TRUE); 
+    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 }
 
@@ -143,9 +167,15 @@ void Game::SceneChanger(Player& player, Enemy& enemy, Camera& camera, GameUI& ga
 {
     if (enemy.GetHP() <= 0)
     {
+        if (!isPlaySE_shine)
+        {
+            PlaySoundMem(shine_SE, DX_PLAYTYPE_BACK);
+            isPlaySE_shine = true;
+        }
         camera.EndUpdate(enemy.GetTopPosition());
         if (camera.GetTime() >= 240)
         {
+            StopSoundMem(BGM);
             alpha += 2;
             if (alpha >= 350)
             {
@@ -153,13 +183,10 @@ void Game::SceneChanger(Player& player, Enemy& enemy, Camera& camera, GameUI& ga
             }
         }
     }
-    else
-    {
-      
-    }
 
     if (gameUI.GetAlpha_bright() >= 500)
     {
+        StopSoundMem(BGM);
         ChangeScene("GameOver");
     }
 

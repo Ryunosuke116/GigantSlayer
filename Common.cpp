@@ -1,8 +1,9 @@
 #include "Include.h"
 
-Common::Common()
+Common::Common(const char* path)
 {
     shadowHandle = LoadGraph("material/Shadow.tga");
+    bulletShadowHandle = LoadGraph("material/red_.tga");
 }
 
 Common::~Common()
@@ -56,18 +57,18 @@ void Common::MovableCalculation(VECTOR& position)
 
 void Common::Draw(Map& map, const VECTOR& PlayerPosition, const Enemy& enemy)
 {
-    DrawShadow(map, PlayerPosition);
+    DrawShadow(ShadowSize, ShadowHeight, shadowHandle, map, PlayerPosition);
     for (auto& bullet : enemy.bullet)
     {
-        DrawShadow(map, bullet->GetPosition());
+        DrawShadow(bulletShadowSize, bulletShadowHeight, bulletShadowHandle, map, bullet->GetPosition());
     }
-    DrawShadow(map, enemy.GetBottomPosition());
+    DrawShadow(ShadowSize, ShadowHeight, shadowHandle, map, enemy.GetBottomPosition());
 }
 
 /// <summary>
 /// プレイヤーの影を描画
 /// </summary>
-void Common::DrawShadow(const Map& map, const VECTOR& position)
+void Common::DrawShadow(const int ShadowSize, const int ShadowHeight, const int shadowHandle, const Map& map, const VECTOR& position)
 {
 
     // テクスチャアドレスモードを CLAMP にする( テクスチャの端より先は端のドットが延々続く )
@@ -104,6 +105,7 @@ void Common::DrawShadow(const Map& map, const VECTOR& position)
         vertex[0].dif.a = 0;
         vertex[1].dif.a = 0;
         vertex[2].dif.a = 0;
+
         if (hitResult->Position[0].y > position.y - ShadowHeight)
             vertex[0].dif.a = static_cast<BYTE>(128 * (1.0f - static_cast<float>(fabs(hitResult->Position[0].y - position.y) / ShadowHeight)));
 

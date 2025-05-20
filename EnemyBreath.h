@@ -14,6 +14,7 @@ private:
 		bool isStop;			//止めるかどうか
 		float radius;			//球の半径
 		Effect* effect;				//エフェクトクラス
+
 	};
 	//Breath breath[42];
 	Breath breath;				//球の構造体
@@ -27,6 +28,7 @@ private:
 	int attackNumber;			//何回球を動かすか
 	int fixCount;				//攻撃を固定する
 	int effectPlayStack;		//エフェクト再生時間
+	int SEHandle;
 	bool isStopAdd;				//加算するかどうか
 	bool isDirection;			//向きを変えるか
 	bool isEffect;
@@ -54,6 +56,7 @@ public:
 	// ゲッター
 	//-----------------------------------------------------------//
 	bool GetIsAttack() { return isAttack; }
+
 
 	//-------------------------------------------------------------//
 	// セッター

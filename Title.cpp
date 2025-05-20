@@ -14,11 +14,10 @@ Title::Title(SceneManager& manager) : BaseScene{ manager }
         start_font = LoadGraph("material/start_04.png");
         movieHandle = LoadGraph("material/mp4/title_movie.mpg");
         font_back = LoadGraph("material/lose_backGround.png");
+        buttonSound = LoadSoundMem("material/SE/button.mp3");
     }
 
     titleHandle = 0;
-
-    
 }
 
 /// <summary>
@@ -36,6 +35,7 @@ void Title::Initialize()
 {
     titleHandle = LoadGraph("material/GigantSlayer_title.png");
     backGroundHandle = MV1LoadModel("material/skyDome/sunSet.mv1");
+    SeekMovieToGraph(movieHandle, 0);
     PlayMovieToGraph(movieHandle);
     camera->Initialize();
     blackOut->Initialize();
@@ -60,16 +60,18 @@ void Title::Update()
         addAlpha = -addAlpha;
     }
     //Ä¶I—¹‚µ‚½‚çÅ‰‚©‚ç—¬‚·
-    if (GetMovieStateToGraph(movieHandle) == 0)
+    time = TellMovieToGraph(movieHandle);
+    if (TellMovieToGraph(movieHandle) >= 77000)
     {
         SeekMovieToGraph(movieHandle, 0);
         PlayMovieToGraph(movieHandle);
     }
 
-    if (input->GetNowFrameInput() & PAD_INPUT_A ||
-        CheckHitKey(KEY_INPUT_SPACE))
+    if ((input->GetNowFrameInput() & PAD_INPUT_A ||
+        CheckHitKey(KEY_INPUT_SPACE)) && !isPush)
     {
         isPush = true;
+        PlaySoundMem(buttonSound, DX_PLAYTYPE_BACK);
     }
 
     if (isPush)
@@ -99,5 +101,5 @@ void Title::Draw()
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
    // PlayMovie("material/mp4/a.avi", 1, DX_MOVIEPLAYTYPE_NORMAL);
     blackOut->Draw();
-    
+   // printfDx("%d", time);
 }

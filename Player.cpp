@@ -35,6 +35,10 @@ Player::Player()
     isObjectHitEnemy = false;
     isAttackHold = false;
     isDisplay = false;
+    isDown = false;
+    isAntiTouch = false;
+    isInvincible = false;
+    isDamege = false;
     currentJumpPower = 0;
     playingEffectHandle = -1;
     motionNumber = 0;
@@ -42,6 +46,7 @@ Player::Player()
     //モデルの読み込み
     modelHandle = MV1LoadModel("material/mv1/maria_0123.mv1");
     shadowHandle = LoadGraph("material/Shadow.tga");
+    die_SE = LoadSoundMem("material/SE/die.mp3");
 
     MV1SetScale(modelHandle, VGet(0.04f, 0.04f, 0.04f));
     //エフェクトのインスタンス化、初期化
@@ -64,6 +69,7 @@ Player::~Player()
 void Player::Initialize()
 {
     HP = 4;
+    stock = 0;
     invincibleTime = 0;
     position = VGet(0, 0, -50);
     targetMoveDirection = VGet(0, 0, 0);
@@ -86,10 +92,14 @@ void Player::Initialize()
     isHitObject[4] = {false};
     isObjectHitEnemy = false;
     isAttackHold = false;
+    isDown = false;
+    isAntiTouch = false;
+    isInvincible = false;
+    isDamege = false;
 
     //待機モーション読み込み
     ChangeMotion(stand);
-
+    
     effectPosition = VGet(objectPosition.x, objectPosition.y, objectPosition.z);
     
     effect->Initialize("material/TouhouStrategy/miko_hihou_effect.efkefc",1.2f, effectPosition);
@@ -114,6 +124,7 @@ void Player::Update(Calculation& calculation,
 
     if (HP <= 0 && motionNum != die)
     {
+        PlaySoundMem(die_SE, DX_PLAYTYPE_BACK);
         ChangeMotion(die);
         playTime = 5.0f;
     }
@@ -162,28 +173,77 @@ void Player::Update(Calculation& calculation,
 
         int number = 0;
 
-        //オブジェクトと接触しているか
-        for (auto& objects : object)
+        if ((input.GetNowFrameInput() & PAD_INPUT_C ||
+                CheckHitKey(KEY_INPUT_5)))
         {
-            isHitObject[number] = ObjectHitCheck(objects->GetPosition(), objects->GetRadius(), calculation);
-            
-            if (isHitObject[number] && objects->GetIsCanCatch())
+
+            if (!isPush_button)
             {
-                //オブジェクトを拾うか
-                PickUpObject(*object[number], input);
+                //攻撃
+                if (stock >= 1 && isAttackHold)
+                {
+ 
+                    for (auto& objects : object)
+                    {
+                        if (objects->GetIsPlayerHold())
+                        {
+                            objects->SetIsThrow(true);
+                            stock--;
+                            if (stock <= 0)
+                            {
+                                isAttackHold = false;
+                            }
+                        }
+                    }
+                }
+
+                //球をつかむ
+                if (!isAttackHold)
+                {
+
+                    //オブジェクトと接触しているか
+                    for (auto& objects : object)
+                    {
+                        isHitObject[number] = ObjectHitCheck(objects->GetPosition(), objects->GetRadius(), calculation);
+            
+                        if (isHitObject[number])
+                        {
+                            //オブジェクトを拾うか
+                            PickUpObject(*object[number], input);
+                        }
+                        number++;
+                    }
+                }
             }
-            number++;
+
+            isPush_button = true;
+        }
+        else
+        {
+            isPush_button = false;
         }
 
+     
+
+        FallDown();
+
+    }
+
+    if (!(motionNum == die))
+    {
         if (!isInvincible)
         {
             //敵の攻撃の当たり判定
             EnemyHitCheck(enemy, calculation);
         }
    
-        Down();
+        if (enemy.GetHP() > 0)
+        {
+            Down();
+        }
+
     }
-   
+
     Jump(input, moveVec);
 
     //ジャンプ力を加える
@@ -198,33 +258,14 @@ void Player::Update(Calculation& calculation,
     //プレイヤーの当たり判定の更新
     topSpherePosition = VGet(position.x, position.y + 4.0f, position.z);
     bottomSpherePosition = VGet(position.x, position.y + 1.0f, position.z);
+   
+    //プレイヤーの向きを保存
+    //正規化する
+    keepTargetMoveDirection = VNorm(targetMoveDirection);
+    keepTargetMoveDirection.y = 0;
 
-    //攻撃
-    if (input.GetNowFrameInput() & PAD_INPUT_C && stock >= 1 &&
-        !(motionNum == down || motionNum == standUp || motionNum == pickUp_Hold ||
-            motionNum == pickUp) && isAttackHold)
-    {
-        //プレイヤーの向きを保存
-        //正規化する
-        keepTargetMoveDirection = VNorm(targetMoveDirection);
-        keepTargetMoveDirection.y = 0;
-
-        for (auto& objects : object)
-        {
-            if (objects->GetIsPlayerHold())
-            {
-                objects->SetIsThrow(true);
-                stock--;
-                if (stock <= 0)
-                {
-                    isAttackHold = false;
-                    
-                }
-            }
-        }
-    }
-    Attack(input);
-    AttackHitCheck(enemy, calculation);
+    
+    //AttackHitCheck(enemy, calculation);
 
     //無敵時間
     if (isInvincible)
@@ -443,51 +484,23 @@ void Player::Jump(const Input& input, VECTOR& moveVec)
 /// <param name="input"></param>
 void Player::PickUpObject(Object& object, const Input& input)
 {
-
     //オブジェクトとプレイヤーが当たった場合消す
-    if ((input.GetNowFrameInput() & PAD_INPUT_C || CheckHitKey(KEY_INPUT_5)) &&
-        !isAttackHold)
+    if (object.GetIsCanCatch())
     {
         isAttackHold = true;
+        object.SetIsPlayerHold(true);
         ChangeMotion(pickUp_Hold);
-        object.SetPlayerIsHit(true);
+        object.SetIsPickUp(true);
         //球に触れたときストックを増やす
         stock++;
     }
+    else
+    {
+        isDown = true;
+    }
 }
 
-/// <summary>
-/// 攻撃
-/// </summary>
-/// <param name="input"></param>
-void Player::Attack(const Input& input)
-{
-    //行動不能状態ではなければ攻撃可能
-    //if (input.GetNowFrameInput() & PAD_INPUT_C && stock >= 1 && 
-    //    !(motionNum == down || motionNum == standUp || motionNum == pickUp_Hold ||
-    //        motionNum == pickUp) && isAttackHold)
-    //{
-    //    if (!isPushKey)
-    //    {
-    //        //プレイヤーの向きを保存
-    //        //正規化する
-    //        keepTargetMoveDirection = VNorm(targetMoveDirection);
-    //        keepTargetMoveDirection.y = 0;
-
-    //        //速度
-    //        keepTargetMoveDirection = VScale(keepTargetMoveDirection, AttackSpeed);
-    //        //プレイヤーの位置から撃つように
-    //        objectPosition = VGet(topSpherePosition.x, topSpherePosition.y, topSpherePosition.z);
-
-    //        attackSpeedY = JumpPower;
-    //        isPushKey = true;
-    //   
-    //    }
-    //}
-
-}
-
-void Player::AttackHitCheck(Enemy& enemy,Calculation& calculation)
+void Player::AttackHitCheck(Enemy& enemy, Calculation& calculation)
 {
     //カプセルと球
     VECTOR closePosition = calculation.CapsuleHitConfirmation(enemy.GetTopPosition(), enemy.GetBottomPosition(),
@@ -509,8 +522,8 @@ void Player::AttackHitCheck(Enemy& enemy,Calculation& calculation)
             enemy.SetIsPlayerAttackHit(true);
         }
     }
-  
-    
+
+
 }
 
 /// <summary>
@@ -550,6 +563,10 @@ void Player::EnemyHitCheck(Enemy& enemy,Calculation& calculation)
 
         //プレイヤーと敵の攻撃が接触したか
         isHitEnemyAttack = calculation.HitConfirmation(closePosition,bullet->GetPosition(), radius,bullet->GetRadius());
+        if (isHitEnemyAttack)
+        {
+            break;
+        }
     }
 
     //サークル攻撃の当たり判定
@@ -574,6 +591,10 @@ void Player::EnemyHitCheck(Enemy& enemy,Calculation& calculation)
     {
         for (auto& breath : enemy.breath->getBreath())
         {
+            //カプセルと球
+            closePosition = calculation.CapsuleHitConfirmation(topSpherePosition, bottomSpherePosition,
+                breath.position, radius, breath.radius);
+
             isHitEnemyAttack = calculation.HitConfirmation(closePosition, breath.position, radius, enemy.circleAttack->GetRadius());
 
             if (isHitEnemyAttack)
@@ -585,16 +606,28 @@ void Player::EnemyHitCheck(Enemy& enemy,Calculation& calculation)
 
 }
 
+void Player::FallDown()
+{
+    if (isDown)
+    {
+        isAntiTouch = true;
+        isDown = false;
+        ChangeMotion(pickUp);
+    }
+}
+
 /// <summary>
 /// 攻撃にあたっていれば行動不能になる
 /// </summary>
 void Player::Down()
 {
     //攻撃に当たった場合、少しの間行動不能にする　
-    if (isHitEnemyAttack)
+    if (isHitEnemyAttack && !isDamege)
     {
         stock = 0;
         isAttackHold = false;
+        isAntiTouch = false;
+        isDamege = true;
         HP--;
         ChangeMotion(down);
     }
@@ -620,6 +653,11 @@ void Player::ChangeMotion(int motionNum)
 
     // アタッチしたアニメーションの総再生時間を取得する
     totalTime = MV1GetAttachAnimTotalTime(modelHandle, attachIndex);
+
+    if (isAntiTouch && motionNum == down)
+    {
+        playTime = 20.0f;
+    }
 }
 
 void Player::Motion_HoldorUnHold(int motionNum, int holdMotionNum)
@@ -655,7 +693,7 @@ void Player::MotionUpdate()
         playTime++;
 
         //playTimeがtotalTimeを超えたらリセットする
-        if (playTime >= totalTime)
+        if (playTime >= totalTime - 8.0f)
         {
             playTime = 0;
             ChangeMotion(standUp);
@@ -669,7 +707,11 @@ void Player::MotionUpdate()
     else if (motionNum == pickUp || motionNum == pickUp_Hold)
     {
         playTime += 1.2f;
-        if (playTime >= 53.0f)
+        if (isAntiTouch && playTime >= 38.0f)
+        {
+            ChangeMotion(down);
+        }
+        else if (!isAntiTouch && playTime >= 53.0f)
         {
             Motion_HoldorUnHold(stand,stand_Hold);
             isChangeMotion = false;
@@ -713,13 +755,15 @@ void Player::MotionUpdate()
     {
         if (playTime >= totalTime)
         {
-            if (motionNum == standUp)
+            if (motionNum == standUp && !isAntiTouch)
             {
                 isInvincible = true;
             }
             Motion_HoldorUnHold(stand,stand_Hold);
+            isAntiTouch = false;
             isChangeMotion = false;
             isHitEnemyAttack = false;
+            isDamege = false;
 
         }
 
@@ -801,3 +845,4 @@ void Player::StartUpdate()
 
     MotionUpdate();
 }
+

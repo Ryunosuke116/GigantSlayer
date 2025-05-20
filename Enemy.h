@@ -57,6 +57,7 @@ private:
     int bulletNumber;                   //Œ»İ‚ÌUŒ‚‰ñ”
     int maxBulletNumber;                //Å‘åUŒ‚‰ñ”
     int HP;
+    int voiceHandle;
     
     float angle;
     float totalTime;                    //ƒ‚[ƒVƒ‡ƒ“‚Ì‘Ä¶ŠÔ

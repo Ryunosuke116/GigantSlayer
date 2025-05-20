@@ -18,7 +18,8 @@ private:
     int attackEffectTime;
     int time;
     int graphHandle;
-    bool isHitPlayer;
+    int SEHandle;
+    bool isPickUp;      //拾っているか
     bool isHit;
     bool isGetPosition;
     bool isObject;      //出現中かどうか
@@ -31,6 +32,7 @@ private:
     bool isObjectHitEnemy;
     bool isDrop;            //落としたか
     bool isLeanBack;
+    bool isDoingPickUp;     //持ち上げているか
     Effect* effect;
     Effect* attackEffect;
 
@@ -69,21 +71,23 @@ public:
     bool GetIsPlayerHold() { return isPlayerHold; }
     bool GetIsObject() { return isObject; }
     bool GetIsCanCatch() { return isCanCatch; }
-    bool GetIsHitPlayer() { return isHitPlayer; }
+    bool GetIsPickUp() { return isPickUp; }
     bool GetIsDrop() { return isDrop; }
     bool GetIsLeanBack() { return isLeanBack; }
+    bool GetIsDoingPickUp() { return isDoingPickUp; }
 
     /////////////////////////
     // セッター
     /////////////////////////
-    void SetPlayerIsHit(const bool& isHit) { isHitPlayer = isHit; }
+    void SetIsPickUp(const bool& isHit) { isPickUp = isHit; }
     void SetIsCanCatch(const bool& value) { isCanCatch = value; }
     void SetIsThrow(bool flg) { isThrow = flg; }
     void SetAngle(VECTOR newAngle) { keepTargetMoveDirection = newAngle; }
     void SetPosition(VECTOR newPosition) { position = newPosition; }
     void SetIsReset(bool flg) { isReset = flg; }
-    void SetisPlayerHold(bool flg) { isPlayerHold = flg; }
+    void SetIsPlayerHold(bool flg) { isPlayerHold = flg; }
     void SetIsDrop(bool flg) { isDrop = flg; }
     void SetIsLeanBack(bool flg) { isLeanBack = flg; }
+    void SetIsDoingPickUp(bool flg) { isDoingPickUp = flg; }
 };
 

@@ -9,12 +9,12 @@ private:
     VECTOR position;            //敵の座標
     VECTOR bulletSpeed;         //弾速
     VECTOR playerPos;           //プレイヤーの座標
-    VECTOR futurePosition;      //プレイヤーの未来座標
     VECTOR effectPosition;      //エフェクトのポジ
     VECTOR fellPosition;        //落ちたポジション
-    VECTOR velocity;         //速度
     int effectPlayStack;        //エフェクト再生時間
     int positionStack;    //移動する量
+    int bullet_SE;
+    int clrcleAttack_SE;
     bool isAttack;
     bool isEffect;          //エフェクトを出すか
     bool isEmerge;          //出現させるか
@@ -25,7 +25,7 @@ private:
     Effect* effect = NULL;
     Effect* bulletColor = NULL;
     static constexpr float theta    = 30;               //旋回角度の上限
-    static constexpr float speed    = 2.0f;             //速度
+    static constexpr float speed    = 1.2f;             //速度
     static constexpr float radius   = 5.0f;             //半径
     static constexpr float circleAttackBulletSpeed = 0.2f;
 
@@ -48,10 +48,7 @@ public:
     void SetPlayerPosition(VECTOR& getPosition);
     void SetPosition(VECTOR& getPosition);
     void SwitchingIsCircleBullet();
-    void SetIsEmerge(const bool value) { isEmerge = value; }
-    void SetIsCircleBullet(const bool value) { isCircleBullet = value; }
-    void SetIsAttack(const bool value) { isAttack = value; }
-    void SetIsSetUpMotion(const bool value) { isSetUpMotion = value; }
+
 
     ////////////////////////////////////
     // ゲッター
@@ -60,7 +57,16 @@ public:
     VECTOR GetFellPosition() { return fellPosition; }
     bool GetIsEmerge() { return isEmerge; }
     bool GetIsAttack() { return isAttack; }
+    bool GetIsSetUpMotion() { return isSetUpMotion; }
     float GetRadius(){ return radius;}
+
+    ////////////////////////////////////
+    // セッター
+    ////////////////////////////////////
+    void SetIsEmerge(const bool value) { isEmerge = value; }
+    void SetIsCircleBullet(const bool value) { isCircleBullet = value; }
+    void SetIsAttack(const bool value) { isAttack = value; }
+    void SetIsSetUpMotion(const bool value) { isSetUpMotion = value; }
     
 };
 

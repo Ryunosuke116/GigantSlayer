@@ -93,7 +93,7 @@ void Effect::PlayEffect()
 /// </summary>
 void Effect::StopEffect()
 {
-    StopEffekseer3DEffect(playingEffectHandle);
+   StopEffekseer3DEffect(playingEffectHandle);
 }
 
 void Effect::SetSpeed(float speed)

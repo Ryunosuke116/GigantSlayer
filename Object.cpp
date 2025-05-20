@@ -21,7 +21,8 @@ Object::Object()
     addPosition = VGet(0, 0, 0);
     radius = 3;
     graphHandle = LoadGraph("material/X.png");
-    isHitPlayer = false;
+    SEHandle = LoadSoundMem("material/SE/attack.mp3");
+    isPickUp = false;
     isHit = false;
     isGetPosition = false;
     isCanCatch = false;
@@ -50,16 +51,20 @@ void Object::Initialize(Enemy& enemy)
     position = VGet(0, 0, 0);
     addPosition = VGet(0, 0, 0);
     radius = 3;
-    isHitPlayer = false;
+    isPickUp = false;
     isHit = false;
     isGetPosition = false;
-    isCanCatch = false;
+    isObject = false;
     isHitBreath = false;
+    isCanCatch = false;
+    isReset = false;
+    isPlayerHold = false;
     isThrow = false;
     isPushKey = false;
-    isObject = false;
     isObjectHitEnemy = false;
     isDrop = false;
+    isLeanBack = false;
+    isDoingPickUp = true;
     position = enemy.GetBottomPosition();
     addPosition = VGet(1, 0, 1);
     effect->Initialize("material/TouhouStrategy/black.efkefc", 1.2f, position);
@@ -202,7 +207,7 @@ void Object::Throw(Enemy& enemy)
         {
             if (position.y <= 3.0f)
             {
-                isHitPlayer = false;
+                isPickUp = false;
                 isPushKey = false;
                 isThrow = false;
                 isCanCatch = true;
@@ -229,6 +234,7 @@ void Object::AttackHitCheck(Enemy& enemy, Calculation& calculation)
         //“–‚½‚Á‚½‚çÁ‚·
         if (isObjectHitEnemy)
         {
+            PlaySoundMem(SEHandle, DX_PLAYTYPE_BACK);
             attackEffect->PlayEffect();
             attackEffect->PositionUpdate(position);
             attackEffect->SetSpeed(2.0f);
@@ -303,7 +309,7 @@ void Object::LeanBackObject()
         isDrop = true;
         isLeanBack = false;
         isPlayerHold = false;
-        isHitPlayer = false;
+        isPickUp = false;
         isPushKey = false;
         isThrow = false;
         isCanCatch = true;
@@ -357,12 +363,13 @@ void Object::Reset(Enemy& enemy)
 {
     effect->Initialize("material/TouhouStrategy/black.efkefc", 1.2f, position);
     position = enemy.GetBottomPosition();
-    isHitPlayer = false;
+    isPickUp = false;
     isCanCatch = false;
     isHitBreath = false;
     isObject = false;
     isThrow = false;
     isPushKey = false;
+    isDoingPickUp = true;
     addPosition = VGet(1, 0, 1);
     effect->StopEffect();
 }

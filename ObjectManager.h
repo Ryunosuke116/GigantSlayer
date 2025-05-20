@@ -16,7 +16,7 @@ private:
     static constexpr float  backSpeed = 0.65f;     //弾の速度
     static constexpr float	JumpPower = 0.75f;	    // ジャンプ力
     static constexpr float	Gravity = 0.08f;	// 重力
-
+    bool isDoingPickUp;
 
 };
 

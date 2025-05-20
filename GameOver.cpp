@@ -13,9 +13,14 @@ GameOver::GameOver(SceneManager& manager) : BaseScene{ manager }
         arrow = LoadGraph("material/white_arrow_01.png");
         gameOver_font = LoadGraph("material/GAMEOVER.png");
         font_back = LoadGraph("material/lose_backGround.png");
+        buttonSound = LoadSoundMem("material/SE/button.mp3");
         input = new Input();
+        blackOut = new BlackOut();
     }
     select = 0;
+    addAlpha_blackOut = 0;
+    isAdd = false;
+    isSceneChange = false;
 }
 
 /// <summary>
@@ -23,7 +28,14 @@ GameOver::GameOver(SceneManager& manager) : BaseScene{ manager }
 /// </summary>
 GameOver::~GameOver()
 {
-
+    DeleteGraph(continue_font);
+    DeleteGraph(titleBack_font);
+    DeleteGraph(arrow);
+    DeleteGraph(gameOver_font);
+    DeleteGraph(font_back);
+    DeleteSoundMem(buttonSound);
+    delete(input);
+    delete(blackOut);
 }
 
 /// <summary>
@@ -36,6 +48,10 @@ void GameOver::Initialize()
     addAlpha_arrow = 1;
     alpha_arrow = 0;
     addAlpha = 4.5f;
+    addAlpha_blackOut = 4.5f;
+    blackOut->SetAlpha(255);
+    isAdd = true;
+    isSceneChange = false;
 }
 
 /// <summary>
@@ -43,7 +59,17 @@ void GameOver::Initialize()
 /// </summary>
 void GameOver::Update()
 {
+    //ゲームオーバー画面に切り替わった時明転
+    if (isAdd)
+    {
+        blackOut->LightChangeUpdate(addAlpha);
+        if (blackOut->GetAlpha() <= 0)
+        {
+            isAdd = false;
+        }
+    }
 
+    //矢印
     if (alpha_arrow > 50)
     {
         addAlpha_arrow = -2;
@@ -55,11 +81,29 @@ void GameOver::Update()
 
     alpha_arrow += addAlpha_arrow;
 
+    //文字
     if (alpha > 255 || alpha < 0)
     {
         addAlpha = -addAlpha;
     }
     alpha += addAlpha;
+
+    //画面切り替え
+    if (isSceneChange)
+    {
+        blackOut->BlackOutUpdate(addAlpha_blackOut);
+        if (blackOut->GetAlpha() >= 300)
+        {
+            if (select == 0)
+            {
+                ChangeScene("Game");
+            }
+            if (select == 1)
+            {
+                ChangeScene("Title");
+            }
+        }
+    }
 
     input->Update();
 
@@ -85,13 +129,20 @@ void GameOver::Update()
         select = 1;
     }
 
-    if (input->GetNowFrameInput() & PAD_INPUT_A && select == 0)
+    if (!isSceneChange)
     {
-        ChangeScene("Game");
-    }
-    if (input->GetNowFrameInput() & PAD_INPUT_A && select == 1)
-    {
-        ChangeScene("Title");
+        if (input->GetNowFrameInput() & PAD_INPUT_A && !isSceneChange)
+        {
+            PlaySoundMem(buttonSound, DX_PLAYTYPE_BACK);
+        }
+        if (input->GetNowFrameInput() & PAD_INPUT_A && select == 0)
+        {
+            isSceneChange = true;
+        }
+        if (input->GetNowFrameInput() & PAD_INPUT_A && select == 1)
+        {
+            isSceneChange = true;
+        }
     }
 }
 
@@ -122,4 +173,6 @@ void GameOver::Draw()
         SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
     }
+
+    blackOut->Draw();
 }

@@ -77,6 +77,7 @@ void Enemy::Initialize()
 
     if (modelHandle == -1)
     {
+        voiceHandle = LoadSoundMem("material/SE/monster-roar-6985.mp3");
         //モデル読み込み
         modelHandle = MV1LoadModel("material/mv1/mutant_1031.mv1");
         //モデルの大きさ調整
@@ -106,10 +107,10 @@ void Enemy::Initialize()
 /// </summary>
 void Enemy::Update(Calculation& calculation)
 {
-    topPosition = VGet(bottomPosition.x, bottomPosition.y + 50.0f, bottomPosition.z);
-
+    //向く方向
     UpdateDirection();
 
+    //通常時は正面を向く
     if (motionNum != breathAttack)
     {
         calculation.UpdateAngle(direction, angle, modelHandle);
@@ -125,14 +126,6 @@ void Enemy::Update(Calculation& calculation)
         ChangeMotion(knockback);
     }
 
-    //攻撃の更新
-    for (auto& bullets : bullet)
-    {
-        bullets->Update(bottomPosition, *circleAttack);
-    }
-    circleAttack->Update();
-    breath->Update();
-
     if (CheckHitKey(KEY_INPUT_3) && (motionNum != bulletAttack))
     {
         ChangeMotion(bulletAttack);
@@ -143,7 +136,17 @@ void Enemy::Update(Calculation& calculation)
         ChangeMotion(breathAttack);
     }
 
+    //攻撃の更新
+    for (auto& bullets : bullet)
+    {
+        bullets->Update(bottomPosition, *circleAttack);
+    }
+    circleAttack->Update();
+    breath->Update();
+
+    //行動の流れを制御
     ActionFlow(*bullet, *circleAttack, *breath, calculation);
+
     if (bullet[0]->GetIsAttack())
     {
         isBootBullet = true;
@@ -152,6 +155,7 @@ void Enemy::Update(Calculation& calculation)
     {
         isBootBullet = false;
     }
+
     //モーション更新
     MotionUpdate();
 
@@ -182,7 +186,6 @@ void Enemy::Draw()
 {
     MV1DrawModel(modelHandle);
 
-   // DrawCapsule3D(bottomPosition, topPosition, 15, 16, GetColor(0, 0, 0), GetColor(255, 255, 255), false);
     for (auto& bullets : bullet)
     {
         bullets->Draw();
@@ -197,18 +200,24 @@ void Enemy::Draw()
     printfDx("enemy.angle.z %f\n", a.z);
 }
 
+/// <summary>
+/// 方向計算
+/// </summary>
 void Enemy::UpdateDirection()
 {
+    //ブレス攻撃ではないときは正面を向く
     if (motionNum != breathAttack)
     {
         direction = VSub(VGet(0, 0, 0), bottomPosition);
     }
+    //ブレス攻撃時、プレイヤーの方向を向く
     else
     {
         direction = VSub(playerPos, bottomPosition);
     }
     direction.y = 0;
 
+    //正規化
     if (VSize(direction) != 0)
     {
         direction = VNorm(direction);
@@ -337,46 +346,47 @@ void Enemy::ActionFlow(EnemyBullet bullet[], EnemyCircleAttack& circleAttack,
                        EnemyBreath& breath, Calculation& calculation)
 {   
     //待機中50fごとに行動する
-    if (!isAnger)
+    // if (motionNum == stand)
     {
-        if (motionNum == stand)
+        standTime_now++;
+        if (standTime_now >= standTime)
         {
-            standTime_now++;
-            if (standTime_now >= standTime)
+            if (playTime == 0)
             {
-                if (playTime == 0)
-                {
-                    standTime_now = 0;
-                    Order(bullet[0], breath);
+                standTime_now = 0;
+                Order(bullet[0], breath);
 
-                    if (isBulletNumber)
-                    {
-                        standTime_now = standTime;
-                    }
+                if (isBulletNumber)
+                {
+                    standTime_now = standTime;
                 }
             }
         }
     }
-    else if (isAnger)
-    {
-        if (motionNum == stand)
-        {
-            standTime_now++;
-            if (standTime_now >= standTime_anger)
-            {
-                if (playTime == 0)
-                {
-                    standTime_now = 0;
-                    Order(bullet[0], breath);
+    //if (!isAnger)
+    //{
+    //    
+    //}
+    //else if (isAnger)
+    //{
+    //    if (motionNum == stand)
+    //    {
+    //        standTime_now++;
+    //        if (standTime_now >= standTime_anger)
+    //        {
+    //            if (playTime == 0)
+    //            {
+    //                standTime_now = 0;
+    //                Order(bullet[0], breath);
 
-                    if (isBulletNumber)
-                    {
-                        standTime_now = standTime_anger;
-                    }
-                }
-            }
-        }
-    }
+    //                if (isBulletNumber)
+    //                {
+    //                    standTime_now = standTime_anger;
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 
     //弾攻撃
     if (motionNum == bulletAttack)
@@ -413,11 +423,11 @@ void Enemy::ActionFlow(EnemyBullet bullet[], EnemyCircleAttack& circleAttack,
     if (isPlayerAttackHit)
     {
         HP -= 20;
-        if (!bullet[0].GetIsAttack())
+        if (!bullet[0].GetIsAttack() && bullet[0].GetIsSetUpMotion())
         {
             bullet[0].ResetAttack(bottomPosition);
         }
-        if (!bullet[1].GetIsAttack())
+        if (!bullet[1].GetIsAttack() && bullet[1].GetIsSetUpMotion())
         {
             bullet[1].ResetAttack(bottomPosition);
         }
@@ -495,6 +505,9 @@ void Enemy::Order(EnemyBullet& bullet,EnemyBreath& breath)
     }
 }
 
+/// <summary>
+/// 開始時
+/// </summary>
 void Enemy::StartUpdate()
 {
     MotionUpdate();
@@ -503,6 +516,10 @@ void Enemy::StartUpdate()
     if (standTime_now == 190)
     {
         ChangeMotion(breathAttack);
+    }
+    if (standTime_now == 210)
+    {
+        PlaySoundMem(voiceHandle, DX_PLAYTYPE_BACK);
     }
  
 }

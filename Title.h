@@ -13,6 +13,7 @@ public:
     void Draw();
 private:
     int titleHandle;
+    int time;
     int movieHandle;
     int backGroundHandle;
     int start_font;
@@ -20,6 +21,7 @@ private:
     int addAlpha;
     int alpha_bright;
     int font_back;
+    int buttonSound;
     bool isPush;
     Camera* camera = NULL;
     Input* input = NULL;

@@ -10,10 +10,17 @@ GameClear::GameClear(SceneManager& manager) : BaseScene{ manager }
         font_back = LoadGraph("material/lose_backGround.png");
         clear_font = LoadGraph("material/GAMECLEAR_01.png");
         titleBack_font = LoadGraph("material/ResetTitle_01.png");
+        buttonSound = LoadSoundMem("material/SE/button.mp3");
         input = new Input();
+        blackOut = new BlackOut();
     }
     alpha = 0;
     addAlpha = 0;
+    alpha_white = 0;
+    alpha_black = 0;
+    addAlpha_black = 0;
+    addAlpha_white = 0;
+    isAdd = false;
 }
 
 /// <summary>
@@ -21,7 +28,12 @@ GameClear::GameClear(SceneManager& manager) : BaseScene{ manager }
 /// </summary>
 GameClear::~GameClear()
 {
-
+    delete(input);
+    delete(blackOut);
+    DeleteGraph(font_back);
+    DeleteGraph(clear_font);
+    DeleteGraph(titleBack_font);
+    DeleteSoundMem(buttonSound);
 }
 
 /// <summary>
@@ -31,6 +43,12 @@ void GameClear::Initialize()
 {
     alpha = 0;
     addAlpha = 4.5f;
+    alpha_white = 255;
+    alpha_black = 0;
+    addAlpha_black = 4.5f;
+    addAlpha_white = 4.5f;
+    blackOut->SetAlpha(0);
+    isAdd = false;
 }
 
 /// <summary>
@@ -46,10 +64,25 @@ void GameClear::Update()
     }
     alpha += addAlpha;
 
-    if (input->GetNowFrameInput() & PAD_INPUT_A || 
-        CheckHitKey(KEY_INPUT_SPACE))
+    if (alpha_white > 0)
     {
-        ChangeScene("Title");
+        alpha_white -= addAlpha_white;
+    }
+
+    if (isAdd)
+    {
+        alpha_black += addAlpha_black;
+        if (alpha_black >= 350)
+        {
+            ChangeScene("Title");
+        }
+    }
+
+    if ((input->GetNowFrameInput() & PAD_INPUT_A || 
+        CheckHitKey(KEY_INPUT_SPACE)) && !isAdd)
+    {
+        isAdd = true;
+        PlaySoundMem(buttonSound, DX_PLAYTYPE_BACK);
     }
 }
 
@@ -63,5 +96,13 @@ void GameClear::Draw()
 
     SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha);
     DrawGraph(290, 600, titleBack_font, true);
+    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+    SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha_white);
+    DrawBox(0, 0, 1600, 900, GetColor(255, 255, 255), TRUE);
+    SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+    SetDrawBlendMode(DX_BLENDMODE_ALPHA, alpha_black);
+    DrawBox(0, 0, 1600, 900, GetColor(0, 0, 0), TRUE);
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 }

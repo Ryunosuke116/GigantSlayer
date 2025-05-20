@@ -13,17 +13,17 @@
 /// </summary>
 EnemyBullet::EnemyBullet()
 {
-    bulletSpeed = VGet(0, 0, 0);
     position = VGet(0, 0, 0);
+    bulletSpeed = VGet(0, 0, 0);
     playerPos = VGet(0, 0, 0);
-    futurePosition = VGet(0, 0, 0);
     effectPosition = VGet(0, 0, 0);
     fellPosition = VGet(0, 0, 0);
+
     positionStack = 0;
     scale = 0;
     effectPlayStack = 0;
 
-    bulletSpeed_Y = 2.0f;
+    bulletSpeed_Y = 2.5f;
     isAttack = false;
     isEffect = false;
     isEmerge = false;
@@ -34,7 +34,9 @@ EnemyBullet::EnemyBullet()
     {
         effect = new Effect();
         bulletColor = new Effect();
-
+        bullet_SE = LoadSoundMem("material/SE/bullet_02.mp3");
+        clrcleAttack_SE = LoadSoundMem("material/SE/clrcle.mp3");
+        ChangeVolumeSoundMem(255, bullet_SE);
     }
 }
 
@@ -53,6 +55,11 @@ void EnemyBullet::Initialize(const VECTOR EnemyPosition)
 {
     //ポジション初期化
     position = VGet(EnemyPosition.x, EnemyPosition.y + 35, EnemyPosition.z);
+    bulletSpeed = VGet(0, 0, 0);
+    playerPos = VGet(0, 0, 0);
+    effectPosition = VGet(0, 0, 0);
+    fellPosition = VGet(0, 0, 0);
+    bulletSpeed_Y = 2.5f;
     //初期化
     effect->Initialize("material/TouhouStrategy/patch_stElmo_area.efkefc", 1.2f, position);
     bulletColor->Initialize("material/TouhouStrategy/enemyBullet.efkefc", 1.6f, position);
@@ -63,6 +70,9 @@ void EnemyBullet::Initialize(const VECTOR EnemyPosition)
     isEmerge = false;
     isCircleBullet = false;
     isSetUpMotion = false;
+    positionStack = 0;
+    scale = 0;
+    effectPlayStack = 0;
 
 }
 
@@ -158,10 +168,12 @@ void EnemyBullet::Move(const VECTOR enemyPosition,EnemyCircleAttack& circleAttac
         if (position.y > 0.0f)
         {
             position.y += bulletSpeed_Y;
+
         }
         //　 0まで落下したとき
         else
         {
+            PlaySoundMem(bullet_SE, DX_PLAYTYPE_BACK);
             //サークル攻撃の場合、オブジェクトは発生しない
             if (isCircleBullet)
             {
@@ -180,6 +192,7 @@ void EnemyBullet::Move(const VECTOR enemyPosition,EnemyCircleAttack& circleAttac
             if (circleAttack.isAttack)
             {
                 circleAttack.SetPosition(fellPosition);
+                PlaySoundMem(clrcleAttack_SE, DX_PLAYTYPE_BACK);
             }
 
             //サークル攻撃をしなければ再生
@@ -206,11 +219,13 @@ void EnemyBullet::ResetAttack(const VECTOR& enemyPosition)
 
     //bulletの座標をリセットする
     position = VGet(enemyPosition.x, enemyPosition.y + 35, enemyPosition.z);
-    bulletColor->PositionUpdate(position);
-    bulletColor->StopEffect();
     positionStack = 0;
     scale = 0;
     bulletSpeed_Y = 2.5f;
+    if (bulletColor != NULL)
+    {
+        bulletColor->StopEffect();
+    }
 }
 
 /// <summary>

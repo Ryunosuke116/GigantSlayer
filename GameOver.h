@@ -20,10 +20,15 @@ private:
     int font_back;
     int arrow;
     int select;
+    int buttonSound;
     float alpha;
     float alpha_arrow;
     float addAlpha_arrow;
     float addAlpha;
+    float addAlpha_blackOut;
+    bool isAdd;
+    bool isSceneChange;
     Input* input = NULL;
+    BlackOut* blackOut = NULL;
 };
 

@@ -51,35 +51,37 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     SceneManager* sceneManager = new SceneManager();
 
-    sceneManager->Add<GameClear>("GameClear");
     sceneManager->Add<Title>("Title");
     sceneManager->Add<Game>("Game");
+    sceneManager->Add<GameClear>("GameClear");
     sceneManager->Add<GameOver>("GameOver");
 
 
    while (!ProcessMessage() && !ClearDrawScreen() && !CheckHitKey(KEY_INPUT_ESCAPE))
-    {
-        frameTime = GetNowHiPerformanceCount();
+   {
+       frameTime = GetNowHiPerformanceCount();
 
-        //エフェクシアを3Dに同期
-        Effekseer_Sync3DSetting();
+       //エフェクシアを3Dに同期
+       Effekseer_Sync3DSetting();
 
-        //アップデート
-        sceneManager->Update();
+       //アップデート
+       sceneManager->Update();
 
-        //画面の初期化
-        ClearDrawScreen();
+       //画面の初期化
+       ClearDrawScreen();
 
-        //描画
-        clsDx();
-        sceneManager->Draw();
+       //描画
+       clsDx();
+       sceneManager->Draw();
 
-        // 裏画面の内容を表画面に反映させる
-        ScreenFlip();
+       // 裏画面の内容を表画面に反映させる
+       ScreenFlip();
 
-        // 雑に60fps固定
-        while ((GetNowHiPerformanceCount() - frameTime) < 16667) {}
-    }
+       // 雑に60fps固定
+       while ((GetNowHiPerformanceCount() - frameTime) < 16667) {}
+   }
+
+
 
     // Effekseerを終了する。
     Effkseer_End();

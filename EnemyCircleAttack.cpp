@@ -32,7 +32,7 @@ EnemyCircleAttack::EnemyCircleAttack()
 		circleAttack.effectPosition = VGet(bulletPosition.x, bulletPosition.y - 10, bulletPosition.z);
 
 		EnemyCalculation::CircumferenceCalculation(circleAttack.addPosition, 0, 0, stack, speed);
-		effect->Initialize("material/TouhouStrategy/utsuho_sun_area2.efkefc", 1.0f, circleAttack.effectPosition);
+		effect->Initialize("material/TouhouStrategy/utsuho_sun_area_02.efkefc", 1.0f, circleAttack.effectPosition);
 
 		circleAttack.effect = effect;
 		effect->SetPosition(circleAttack.effectPosition);
